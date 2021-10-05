@@ -8,7 +8,7 @@ Layout can change asynchronously when the user scrolls, zooms or resizes the win
 ## Sample Use Case
 Consider a combo-application consisting of two major parts - a video-conferencing application and a productivity-suite application co-existing in a single tab. Assume the video-conferencing uses existing/upcoming APIs such as [getDisplayMedia](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia) and/or [getViewportMedia](https://github.com/w3c/mediacapture-screen-share/issues/155) and captures the entire tab. Now it needs to crop away everything other than a particular section of the productivity-suite. It needs to crop away its own video-conferencing content, any speaker notes and other private and/or irrelevant content in the productivity-suite, before transmitting the resulting cropped video remotely.
 
-![Meet_in_Docs_GIF](https://user-images.githubusercontent.com/22117736/136091006-5b4b59b1-0753-470b-bd7e-ddec7a377eaa.gif)
+<img width="1344" alt="DocsSidebar" src="https://user-images.githubusercontent.com/22117736/136094995-48beda21-232b-48c6-b4fc-b8d2a9286e69.png">
 
 Moreover, consider that it is likely that the two collaborating applications are cross-origin from each other. They can post messages, but all communication is asynchronous, and it's easier and more performant if information is transmitted sparingly between them. That precludes solutions involving posting of entire frames, as well as solutions which are too slow to react to changes in layout (e.g. scrolling, zooming and window-size changes).
 
