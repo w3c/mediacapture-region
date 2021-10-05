@@ -1,8 +1,6 @@
 # Summary
 ## Problem Overview
-Recall that applications may currently obtain a capture of the tab in which they run using [getDisplayMedia](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia), either with or without [preferCurrentTab](http://go/get-current-browsing-context-media). Moreover, soon another API will allow similar functionality - [getViewportMedia](https://github.com/w3c/mediacapture-screen-share/issues/155).
-
-In either case, the application may then also wish to crop the resulting video track so as to remove some content from it (typically before sharing it remotely). We introduce a performant and robust API for cropping a self-capture video track.
+Recall that applications may currently obtain a capture of the tab in which they run using [getDisplayMedia](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia), either with or without [preferCurrentTab](http://go/get-current-browsing-context-media). Moreover, soon another API will allow similar functionality - [getViewportMedia](https://github.com/w3c/mediacapture-screen-share/issues/155). In either case, the application may then also wish to crop the resulting video track so as to remove some content from it (typically before sharing it remotely). We introduce a performant and robust API for cropping a self-capture video track.
 
 ## Core Challenges
 Layout can change asynchronously when the user scrolls, zooms or resizes the window. The application [cannot](https://docs.google.com/document/d/1dULARMnMZggfWqa_Ti_GrINRNYXGIli3XK9brzAKEV8/edit#heading=h.vtnc1viphmzf) robustly react to such changes without risking mis-cropping the video track on occasion. The browser therefore needs to step in and help.
