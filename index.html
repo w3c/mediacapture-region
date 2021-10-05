@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <title>Region Capture</title>
+    <script class="remove" src="region-capture.js" type="text/javascript"></script>
+    <script src="https://www.w3.org/Tools/respec/respec-w3c" class="remove"></script>
+  </head>
+  <body>
+    <section id="abstract">
+      <h2>Abstract</h2>
+      <p>
+        This document introduces an API for cropping a video track derived of display-capture of the
+        current [=browsing context=]. A natural extension of the API to allow cropping arbitrary
+        [=browsing contexts=] is possible in the future.
+      </p>
+    </section>
+    <section id="conformance"></section>
+    <section id="definitions">
+      <h2>Definitions</h2>
+      <p>
+        This document uses the definition of the following concepts from [[SCREEN-CAPTURE]]:
+        <dfn>display-surface</dfn>, <dfn>browser</dfn> [=display-surface=] and
+        <dfn>window</dfn> [=display-surface=].
+      </p>
+      <p>
+        This document uses the definition of
+        <dfn>FocusableMediaStreamTrack</dfn> from
+        <a href="https://eladalon1983.github.io/conditional-focus/">CONDITIONAL-FOCUS</a>.
+      </p>
+      <p>
+        Recall that when {{MediaDevices/getDisplayMedia()}} is called and the user chooses to share
+        some [=display-surface=], exactly one video track is produced. If the user chooses to
+        capture a [=browser=] [=display-surface=], we define the resulting capture session as
+        <dfn>self-capture</dfn>, and this video track a <dfn>self-capture video track</dfn>.
+      </p>
+    </section>
+    <section id="use-cases">
+      <h2>Use Cases</h2>
+      <section id="generic-use-case">
+        <h3>Generic Use-Case</h3>
+        <p>
+          Consider an application consisting of multiple collaborating documents. Assume one of
+          these documents, <var>CAPTURING-DOC</var> uses {{MediaDevices/getDisplayMedia()}} or
+          <code>getViewportMedia</code> to capture the entire current [=browsing context=]. If this
+          document then wishes to crop the video track to the coordinates of some sub-section
+          <var>CAPTURE-TARGET</var>of a collaborating document <var>CAPTURED-DOC</var>, how can
+          <var>CAPTURING-DOC</var> do so performantly and reliably? Recall especially that changes
+          in layout due to scrolling, zooming or window resizing present additional challenges.
+        </p>
+      </section>
+      <section id="generic-use-case">
+        <h3>Practical Use-Case</h3>
+        <p>
+          Consider a combo-application consisting of two major parts - a video-conferencing
+          application and a productivity-suite application co-existing in a [=browsing context=].
+          Assume the video-conferencing uses existing/upcoming APIs such as
+          {{MediaDevices/getDisplayMedia()}} and/or <code>getViewportMedia</code> and captures the
+          entire [=browsing context=]. Now it needs to crop away everything other than a particular
+          section of the productivity-suite. It needs to crop away its own video-conferencing
+          content, any speaker notes and other private and/or irrelevant content in the
+          productivity-suite, before transmitting the resulting cropped video remotely.
+        </p>
+        <p>
+          Moreover, consider that it is likely that the two collaborating applications are
+          cross-origin from each other. They can post messages, but all communication is
+          asynchronous, and it's easier and more performant if information is transmitted sparingly
+          between them. That precludes solutions involving posting of entire frames, as well as
+          solutions which are too slow to react to changes in layout (e.g. scrolling, zooming and
+          window-size changes).
+        </p>
+      </section>
+    </section>
+    <section id="solution-overview">
+      <h2>Solution Overview</h2>
+      <p>The <dfn>region-capture mechanism</dfn> is composed of two parts:</p>
+      <ol>
+        <li>
+          [=Crop-ID production=]: A mechanism for <dfn>tagging</dfn> an {{HTMLElement}} as a
+          potential target for the [=cropping mechanism=].
+        </li>
+        <li>
+          [=Cropping mechanism=]: A mechanism for instructing the user agent to start cropping a
+          video track to the contours of a previously [=tagging|tagged=] {{HTMLElement}}, or to stop
+          such cropping and revert a track to its [=uncropped=] state.
+        </li>
+      </ol>
+      <p>
+        We define two <dfn>crop-states</dfn> for video tracks - <dfn>cropped</dfn> and
+        <dfn>uncropped</dfn>. Tracks normally start out [=uncropped=], and may turn to [=cropped=]
+        when {{BrowserCaptureMediaStreamTrack/cropTo}} is successfully called on them; the exception
+        to this rule being that clones of [=cropped=] tracks start out [=cropped=].
+      </p>
+    </section>
+    <section id="produce-crop-id">
+      <h2><dfn>Crop-ID Production</dfn></h2>
+      <section id="crop-id-motivation">
+        <h3>Crop-ID Motivation</h3>
+        <p>
+          The [=cropping mechanism=] presented in this document
+          ({{BrowserCaptureMediaStreamTrack/cropTo}}) relies on [=crop-IDs=] rather than on direct
+          node references. This serves a dual purpose.
+        </p>
+        <ul>
+          <li>
+            <p>It allows cropping by one document to coordinates specified in another document.</p>
+          </li>
+          <li>
+            <p>
+              [=Tagging=] an {{HTMLElement}} as a potential crop-target allows the user agent to
+              avoid unnecessary work on all other elements, like the calculation of bounding boxes
+              and sending such coordinates cross-process.
+            </p>
+          </li>
+        </ul>
+      </section>
+      <section id="producecropid-method">
+        <h3>MediaDevices.produceCropId</h3>
+        <pre class="idl">
+          partial interface MediaDevices {
+            Promise&lt;DOMString&gt;
+            produceCropId((HTMLDivElement or HTMLIFrameElement) target);
+          };
+        </pre>
+        <dl data-link-for="MediaDevices" data-dfn-for="MediaDevices">
+          <dt>
+            <dfn>produceCropId()</dfn>
+          </dt>
+          <dd>
+            <p>
+              The first call of {{MediaDevices/produceCropId}} on an {{HTMLElement}} of a supported
+              type, permanently associates that element with globally unique <dfn>crop-ID</dfn>.
+              Subsequent calls return the same [=crop-ID=]. This [=crop-ID=] may then be used as
+              input to {{BrowserCaptureMediaStreamTrack/cropTo}}. We define a
+              <dfn>valid crop-ID</dfn> as one returned by a previous call to
+              {{MediaDevices/produceCropId()}} in the current [=browsing context=].
+            </p>
+            <p>
+              When this method is first called on a given <var>target</var>, the user agent MUST
+              produce a new <a href="https://wicg.github.io/uuid/">UUID</a> and permanently
+              associate it with the element. The user agent MUST return a {{Promise}} <var>P</var>.
+              The user agent MUST resolve <var>P</var> only after it has finished all the necessary
+              internal propagation of state associated with the new [=crop-ID=], at which point the
+              user agent MUST be ready to receive the new [=crop-ID=] as a valid parameter to
+              {{BrowserCaptureMediaStreamTrack/cropTo}}.
+            </p>
+            <p>
+              Subsequent calls to {{MediaDevices/produceCropId}} MUST return a new {{Promise}} that
+              behave the same way <var>P</var> does. Specifically, the new {{Promise}} MUST resolve
+              after <var>P</var>, and MUST resolve to the same [=crop-ID=] as <var>P</var>.
+            </p>
+            <p>
+              When cloning an element on which {{MediaDevices/produceCropId}} was previously called,
+              the clone MUST NOT be associated with any [=crop-ID=]. If
+              {{MediaDevices/produceCropId}} is later called on the clone, a new [=crop-ID=] MUST be
+              assigned to it.
+            </p>
+          </dd>
+        </dl>
+      </section>
+    </section>
+    <section id="cropping-a-track">
+      <h2><dfn>Cropping Mechanism</dfn></h2>
+      <section id="browser-capture-media-stream-track">
+        <h3>BrowserCaptureMediaStreamTrack</h3>
+        <p>We subclass {{FocusableMediaStreamTrack}} as {{BrowserCaptureMediaStreamTrack}}.</p>
+        <p>
+          Recall that, as per [[SCREEN-CAPTURE]], when {{MediaDevices/getDisplayMedia()}} is called,
+          it returns a {{Promise}}&lt;{{MediaStream}}&gt;, and that this {{MediaStream}} contains
+          exactly one video track.
+        </p>
+        <p>
+          Recall also that the WICG document for
+          <a href="https://wicg.github.io/conditional-focus/">Conditional Focus</a>
+          specififed a subclass of {{MediaStreamTrack}} called {{FocusableMediaStreamTrack}}, which
+          the user agent must return when the user selects to share a [=browser=]
+          [=display-surface=] or a [=window=] [=display-surface=].
+        </p>
+        <p>
+          We specify that if the user chose a capture a [=browser=] [=display-surface=], the user
+          agent MUST instantiate the video track as {{BrowserCaptureMediaStreamTrack}}. (This is
+          congruent with
+          <a href="https://wicg.github.io/conditional-focus/">Conditional Focus</a>'s specification
+          of {{FocusableMediaStreamTrack}} on account of inheritance.) This track is initially
+          [=uncropped=].
+        </p>
+        <pre class="idl">
+          [Exposed = Window]
+          interface BrowserCaptureMediaStreamTrack : FocusableMediaStreamTrack {
+            Promise&lt;undefined&gt; cropTo(DOMString cropTarget);
+            BrowserCaptureMediaStreamTrack clone();
+          };
+        </pre>
+        <dl
+          data-link-for="BrowserCaptureMediaStreamTrack"
+          data-dfn-for="BrowserCaptureMediaStreamTrack"
+        >
+          <dt>
+            <dfn>cropTo()</dfn>
+          </dt>
+          <dd>
+            <p>
+              Calls to this method instruct the user agent to start/stop cropping a [=self-capture
+              video track=] to the contours of the element referenced by
+              <var>cropTarget</var>. Whenever {{BrowserCaptureMediaStreamTrack/cropTo}} is invoked,
+              the user agent MUST execute the following algorithm:
+            </p>
+            <ol>
+              <li>
+                If [=this=] is not a [=self-capture video track=], the user agent MUST return a new
+                {{Promise}}, [=rejected=] with an {{NotSupportedError}}. (Future work may extend
+                this API beyond [=self-capture=].)
+              </li>
+              <li>
+                <p>
+                  The user agent MUST validate <var>cropTarget</var> according to [=this=] track's
+                  current [=crop-state=].
+                </p>
+                <ul>
+                  <li>
+                    If [=this=] track is [=uncropped=], the user agewnt MUST only accept [=valid
+                    crop-IDs=].
+                  </li>
+                  <li>
+                    If [=this=] track is [=cropped=], the user agent MUST accept either [=valid
+                    crop-IDs=] or the empty string.
+                  </li>
+                </ul>
+                <p>
+                  When the user agent does not accept <var>cropTarget</var>, it MUST return a new
+                  {{Promise}}, [=rejected=] with an {{UnknownError}}.
+                </p>
+              </li>
+              <li>
+                The user agent MUST return a new {{Promise}} <var>P</var>. The behavior of this
+                {{Promise}} is specified further below.
+              </li>
+              <li>
+                <p>
+                  The user agent MUST update [=this=] video track's [=crop-state=] according to
+                  <var>cropTarget</var>:
+                </p>
+                <ul>
+                  <li>
+                    If <var>cropTarget</var> is the empty string, the user agent MUST stop cropping.
+                    [=This=] video track reverts to the [=uncropped=] state.
+                  </li>
+                  <li>
+                    If <var>cropTarget</var> is a [=valid crop-ID=], the user agent MUST start
+                    cropping [=this=] video track to the contours of the element referenced by this
+                    [=crop-ID=]. This means that for each new frame produced on the track, the user
+                    agent calculates the bounding box of the pixels belonging to the element, and
+                    crops the frame to the coordinates of this bounding box.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <p>
+                  Call the track's state before this method invocation <var>PRE-STATE</var>, and
+                  after this method invocation <var>POST-STATE</var>. The user agent MUST resolve
+                  <var>P</var> when it is guaranteed that no more frames cropped (or uncropped)
+                  according to <var>PRE-STATE</var> have been delivered to the application, and that
+                  any additional frames delivered to the application will therefore be cropped (or
+                  uncropped) according to either <var>POST-STATE</var> or a later state.
+                </p>
+              </li>
+            </ol>
+          </dd>
+          <dt>
+            <dfn>clone()</dfn>
+          </dt>
+          <dd>
+            <p>
+              When a {{BrowserCaptureMediaStreamTrack}} is cloned, the user agent MUST produce a
+              track with the same [=crop-state=] as the original track. That is to say, the new
+              track is [=cropped=] if and only if the original track was [=cropped=], and if it is
+              indeed [=cropped=], then it is [=cropped=] to the same target.
+            </p>
+            <p>
+              Note that the tracks share [=crop-state=] only initially. Later modifications of
+              either track's [=crop-state=] does not affect the other track.
+            </p>
+          </dd>
+        </dl>
+      </section>
+      <section id="crop-session-lifetime">
+        <h3>Crop-Session Lifetime</h3>
+        <section id="crop-session-definitions">
+          <h4>Crop-Session Definitions</h4>
+          <p>
+            We define an {{HTMLElement}} for which a [=crop-ID=] was produced (through a call to
+            {{MediaDevices/produceCropId}}) as a <dfn>potential crop-target</dfn>.
+          </p>
+          <p>
+            We define a [=potential crop-target=] which is targeted by a successful call to
+            {{BrowserCaptureMediaStreamTrack/cropTo}} as the <dfn>crop-target</dfn> for that
+            <dfn>crop-session</dfn>.
+          </p>
+          <p>
+            Consider a frame produced on a [=cropped=] video track. The user agent calculates the
+            intersection of (i) the [=browsing context=]'s viewport and (ii) the bounding box of all
+            pixels belonging to the [=crop-target=]. This intersection is defined as the
+            <dfn>crop-target coordinates</dfn> for that frame.
+          </p>
+        </section>
+        <section id="crop-session-edge-cases">
+          <h4>Crop-Session Edge Cases</h4>
+          <p>
+            Consider a video track <var>VT</var> [=cropped=] to a given [=crop-target=]
+            <var>TARGET</var>. We define the behavior of the [=crop-session=] of the
+            <var>VT</var> in the face of changes undergone by <var>TARGET</var>.
+          </p>
+          <section id="empty-crop-target">
+            <h5>Empty Crop-Target</h5>
+            <p>
+              We define as an <dfn>empty crop-target</dfn> the case where a [=crop-target=] is
+              attached to the DOM, yet consists of zero pixels which are drawn inside of the
+              [=browsing context|browsing context's=] viewport.
+            </p>
+            <div class="note">
+              <p>Some examples of when this could happen include:</p>
+              <ul>
+                <li>The [=crop-target=] consists of zero pixels.</li>
+                <li>
+                  The [=browsing context|browsing context's=] viewport had been scrolled and the
+                  [=crop-target=] now lies outside of the viewport.
+                </li>
+              </ul>
+            </div>
+            <p>The user agent MUST mute [=cropped=] tracks with an [=empty crop-target=].</p>
+            <p>
+              The user agent MUST unmute [=cropped=] tracks which it previously muted, if they
+              either become [=uncropped=] or if their [=crop-target=] stops being [=empty
+              crop-target|empty=].
+            </p>
+          </section>
+          <section id="disconnected-crop-target">
+            <h5>Disconnected Crop-Target</h5>
+            <p>
+              We define as <dfn>disconnected crop-target</dfn> a [=crop-target=] that had been
+              detached from the DOM.
+            </p>
+            <p>
+              The difference between an [=empty crop-target=] and a [=disconnected crop-target=], is
+              that a [=disconnected crop-target|disconnected=] one may become
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_Management#mark-and-sweep_algorithm"
+                >unreachable</a
+              >, leaving it permanently in the muted state. Nevertheless, the user agent MUST treat
+              a [=disconnected crop-target=] the same way it treats an [=empty crop-target=]. The
+              application may call {{BrowserCaptureMediaStreamTrack/cropTo}} on the track with
+              either the empty string or a new [=crop-ID=], thereby allowing the track to be
+              unmuted.
+            </p>
+          </section>
+        </section>
+      </section>
+    </section>
+    <section id="sample-code">
+      <h2>Sample Code</h2>
+      <div class="example">
+        <p>Code in the capture-target:</p>
+        <pre class="javascript">
+          const mainContentArea = navigator.getElementById('mainContentArea');
+          const cropId = await navigator.mediaDevices.produceCropId(mainContentArea);
+          sendCropId(cropId);
+
+          function sendCropId(cropId) {
+            // Can send the crop-ID to another document in this browsing context
+            // using postMessage() or using any other means.
+            // Possibly there is no other document, and this is just consumed locally.
+          }
+        </pre>
+      </div>
+      <div class="example">
+        <p>Code in the capturing-document:</p>
+        <pre class="javascript">
+          async function startCroppedCapture(cropId) {
+            const stream = await navigator.mediaDevices.getDisplayMedia();
+            const [track] = stream.getVideoTracks();
+            if (!!track.cropTo) {
+              handleError(stream);
+              return;
+            }
+            await track.cropTo(cropId);
+            transmitVideoRemotely(track);
+          }
+        </pre>
+      </div>
+    </section>
+    <section id="future-extensions">
+      <h2>Future Extensions</h2>
+      <p>
+        {{BrowserCaptureMediaStreamTrack/cropTo}} can be extended to support cropping to a
+        [=crop-ID=] produced in an arbitrary [=browsing context=]. This requires that the two
+        documents would collaborate despite living in different [=browsing contexts=]. This is
+        possible using a variety of mechanisms - shared cloud infrastructure,
+        <a href="https://wicg.github.io/capture-handle/">Capture Handle</a>, "mailman iframes" and
+        so on.
+      </p>
+    </section>
+  </body>
+</html>
