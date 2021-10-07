@@ -87,9 +87,8 @@
       </ol>
       <p>
         We define two <dfn>crop-states</dfn> for video tracks - <dfn>cropped</dfn> and
-        <dfn>uncropped</dfn>. Tracks normally start out [=uncropped=], and may turn to [=cropped=]
-        when {{BrowserCaptureMediaStreamTrack/cropTo}} is successfully called on them; the exception
-        to this rule being that clones of [=cropped=] tracks start out [=cropped=].
+        <dfn>uncropped</dfn>. Tracks always start out [=uncropped=], and may turn to [=cropped=]
+        when {{BrowserCaptureMediaStreamTrack/cropTo}} is successfully called on them.
       </p>
     </section>
     <section id="produce-crop-id">
@@ -272,13 +271,8 @@
           <dd>
             <p>
               When a {{BrowserCaptureMediaStreamTrack}} is cloned, the user agent MUST produce a
-              track with the same [=crop-state=] as the original track. That is to say, the new
-              track is [=cropped=] if and only if the original track was [=cropped=], and if it is
-              indeed [=cropped=], then it is [=cropped=] to the same target.
-            </p>
-            <p>
-              Note that the tracks share [=crop-state=] only initially. Later modifications of
-              either track's [=crop-state=] does not affect the other track.
+              track which is initially [=uncropped=], regardless of the [=crop-state=] of the
+              original track.
             </p>
           </dd>
         </dl>
