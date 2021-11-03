@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="left.css" />
+  </head>
+  <body>
+    <div class="rowHeader">
+      <h1>Content Area</h1>
+    </div>
+    <div class="rowContentHolder">
+      <div id="div1" class="rowContentA">
+        <h1>Content 1</h1>
+      </div>
+    </div>
+    <!-- TODO: Why are these breaklines necessary? Why do the two rows overlap otherwise? -->
+    <br /><br />
+    <div class="rowContentHolder">
+      <div id="div2" class="rowContentB">
+        <h1>Content 2</h1>
+      </div>
+    </div>
+    <script>
+      const broadcastChannel = new BroadcastChannel("region-capture-demo");
+
+      if (!navigator.mediaDevices.produceCropId) {
+        // TODO: Display explanation and abort.
+      }
+
+      function postCropID(cropID) {
+        broadcastChannel.postMessage(JSON.stringify({ cropID: cropID }));
+      }
+
+      async function init() {
+        if (!navigator.mediaDevices.produceCropId) {
+          return;
+        }
+        postCropID(await navigator.mediaDevices.produceCropId(document.getElementById("div1")));
+        postCropID(await navigator.mediaDevices.produceCropId(document.getElementById("div2")));
+      }
+
+      init();
+    </script>
+  </body>
+</html>

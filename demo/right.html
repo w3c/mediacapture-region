@@ -1,0 +1,86 @@
+<html>
+  <head> </head>
+  <body>
+    <h1>Video Conferencing App</h1>
+    <br /><br /><br />
+    <video id="video_out" autoplay playsinline style="border: 2px solid"></video>
+    <br /><br /><br />
+    <button id="button0" onclick="OnSourceSelected(0);">Source #1</button>
+    <button id="button1" onclick="OnSourceSelected(1);">Source #2</button>
+    <button id="uncropped" onclick="OnUncroppedSelected();">Uncropped</button>
+    <br />
+    <p>
+      If you can observe a shimmering effect, that's an unrelated issue. Get around it by popping
+      into picture-in-picture mode.
+    </p>
+    <button id="pipButton" onclick="OnPipClicked();" disabled>PiP</button>
+    <script>
+      const video_out = document.getElementById("video_out");
+      const pipButton = document.getElementById("pipButton");
+      let track;
+      let cropIDs = [];
+      let pip;
+
+      async function MaybeStartCapturing() {
+        if (!track || track.readyState != "live") {
+          try {
+            video_out.srcObject = await navigator.mediaDevices.getDisplayMedia({
+              preferCurrentTab: true,
+              cursor: "never", // TODO: crbug.com/1266126
+            });
+            [track] = video_out.srcObject.getVideoTracks();
+            track.onended = () => {
+              pipButton.disabled = true;
+              video_out.srcObject = undefined;
+            };
+          } catch (e) {
+            // TODO
+            console.error(`${e}`);
+            return false;
+          }
+        }
+        pipButton.disabled = false;
+        return true;
+      }
+
+      function IsReady() {
+        return cropIDs.length == 2;
+      }
+
+      async function OnSourceSelected(source) {
+        video_out.style = "border: 2px solid;";
+        if (IsReady() && (await MaybeStartCapturing())) {
+          video_out.pause();
+          await track.cropTo(cropIDs[source]);
+          video_out.play();
+        }
+      }
+
+      async function OnUncroppedSelected() {
+        if (IsReady() && (await MaybeStartCapturing())) {
+          // TODO: This should not be hard-coded, just capped to the size of the div.
+          video_out.style = "border: 2px solid; width: 500px; height: 500px;";
+          video_out.pause();
+          track.cropTo("");
+          video_out.play();
+        }
+      }
+
+      function OnPipClicked() {
+        video_out.requestPictureInPicture();
+      }
+
+      function onBroadcastChannelMessage(serializedMessage) {
+        try {
+          const msg = JSON.parse(serializedMessage.data);
+          cropIDs.push(msg.cropID);
+        } catch (error) {
+          console.error(`${error}`);
+        }
+      }
+
+      const broadcastChannel = new BroadcastChannel("region-capture-demo");
+      broadcastChannel.onmessage = onBroadcastChannelMessage;
+    </script>
+  </body>
+</html>

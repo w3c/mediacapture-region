@@ -1,0 +1,23 @@
+.column {
+  float: left;
+  width: 50%;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.row {
+  display: flex;
+  height: 100%;
+}
+
+.column {
+  flex: 50%;
+}
+
+.column {
+  float: left;
+}
