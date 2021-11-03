@@ -32,6 +32,9 @@
             track.onended = () => {
               pipButton.disabled = true;
               video_out.srcObject = undefined;
+              if (document.pictureInPictureElement) {
+                document.exitPictureInPicture();
+              }
             };
           } catch (e) {
             // TODO
