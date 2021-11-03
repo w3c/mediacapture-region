@@ -11,14 +11,37 @@
     <title>Region Capture Demo</title>
     <link rel="stylesheet" href="index.css" />
   </head>
+
   <body>
-    <div class="row">
-      <div class="column">
-        <iframe src="left.html" width="100%" height="100%"></iframe>
-      </div>
-      <div class="column">
-        <iframe src="right.html" width="100%" height="100%"></iframe>
+    <div id="topLevelContainer" hidden>
+      <div class="row">
+        <div class="column">
+          <iframe src="left.html" width="100%" height="100%"></iframe>
+        </div>
+        <div class="column">
+          <iframe src="right.html" width="100%" height="100%"></iframe>
+        </div>
       </div>
     </div>
+    <div id="errorDiv" hidden>
+      <h1>Region Capture Demo</h1>
+      <p>This demo requires Chrome m97 and either of these two.</p>
+      <ul>
+        <li>Origin Trial activation. If you're seeing this message, it's missing at the moment.</li>
+        <li>
+          "Experimental Web Platform features" - go to chrome://flags/, enable it there, then
+          restart the browser. It should work then.
+        </li>
+      </ul>
+    </div>
+    <script>
+      const topLevelContainer = document.getElementById("topLevelContainer");
+      const error = document.getElementById("errorDiv");
+      if (navigator.mediaDevices.produceCropId) {
+        topLevelContainer.hidden = false;
+      } else {
+        error.hidden = false;
+      }
+    </script>
   </body>
 </html>

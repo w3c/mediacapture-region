@@ -44,9 +44,6 @@
       }
 
       async function init() {
-        if (!navigator.mediaDevices.produceCropId) {
-          return;
-        }
         postCropID(await navigator.mediaDevices.produceCropId(document.getElementById("div1")));
         postCropID(await navigator.mediaDevices.produceCropId(document.getElementById("div2")));
       }
