@@ -3,7 +3,7 @@
   <body>
     <h1>Video Conferencing App</h1>
     <br /><br /><br />
-    <video id="video" autoplay playsinline style="border: 2px solid"></video>
+    <video id="video" autoplay playsinline style="border: none"></video>
     <br /><br /><br />
     <button id="button0" onclick="OnSourceSelected(0);">Source #1</button>
     <button id="button1" onclick="OnSourceSelected(1);">Source #2</button>
@@ -51,7 +51,7 @@
       }
 
       async function OnSourceSelected(source) {
-        video.style = "border: 2px solid;";
+        video.style = "border: none;";
         if (IsReady() && (await MaybeStartCapturing())) {
           video.pause();
           await track.cropTo(cropIDs[source]);
@@ -62,7 +62,7 @@
       async function OnUncroppedSelected() {
         if (IsReady() && (await MaybeStartCapturing())) {
           // TODO: This should not be hard-coded, just capped to the size of the div.
-          video.style = "border: 2px solid; width: 500px; height: 500px;";
+          video.style = "border: none; width: 500px; height: 500px;";
           video.pause();
           track.cropTo("");
           video.play();
