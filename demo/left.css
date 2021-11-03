@@ -1,17 +1,9 @@
 .rowHeader {
-  display: flex;
   height: 10%;
   width: 100%;
 }
 
-.rowHeader:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
 .rowContentA {
-  display: flex;
   height: 100%;
   width: 100%;
   background-color: #9bc6d3;
@@ -19,23 +11,10 @@
 }
 
 .rowContentB {
-  display: flex;
   height: 100%;
   width: 100%;
   background-color: #e8e3cc;
   border: 10px solid #f5d3d6;
-}
-
-.rowContentA:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-.rowContentB:after {
-  content: "";
-  display: table;
-  clear: both;
 }
 
 .rowContentHolder {
