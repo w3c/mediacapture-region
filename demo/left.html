@@ -9,6 +9,7 @@
     <div class="rowContentHolder">
       <div id="div1" class="rowContentA">
         <h1>Content 1</h1>
+        <p id="animation1"></p>
       </div>
     </div>
     <!-- TODO: Why are these breaklines necessary? Why do the two rows overlap otherwise? -->
@@ -16,14 +17,27 @@
     <div class="rowContentHolder">
       <div id="div2" class="rowContentB">
         <h1>Content 2</h1>
+        <p id="animation2"></p>
       </div>
     </div>
     <script>
-      const broadcastChannel = new BroadcastChannel("region-capture-demo");
-
       if (!navigator.mediaDevices.produceCropId) {
         // TODO: Display explanation and abort.
       }
+
+      let animationCounter = 0;
+
+      function animate(animation) {
+        animation.innerHTML = `Poor man's Intellectual-Property-respecting animation frame #${animationCounter}.`;
+      }
+
+      setInterval(() => {
+        ++animationCounter;
+        animate(animation1);
+        animate(animation2);
+      }, 100);
+
+      const broadcastChannel = new BroadcastChannel("region-capture-demo");
 
       function postCropID(cropID) {
         broadcastChannel.postMessage(JSON.stringify({ cropID: cropID }));
