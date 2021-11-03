@@ -3,7 +3,7 @@
   <body>
     <h1>Video Conferencing App</h1>
     <br /><br /><br />
-    <video id="video_out" autoplay playsinline style="border: 2px solid"></video>
+    <video id="video" autoplay playsinline style="border: 2px solid"></video>
     <br /><br /><br />
     <button id="button0" onclick="OnSourceSelected(0);">Source #1</button>
     <button id="button1" onclick="OnSourceSelected(1);">Source #2</button>
@@ -15,7 +15,7 @@
     </p>
     <button id="pipButton" onclick="OnPipClicked();" disabled>PiP</button>
     <script>
-      const video_out = document.getElementById("video_out");
+      const video = document.getElementById("video");
       const pipButton = document.getElementById("pipButton");
       let track;
       let cropIDs = [];
@@ -24,14 +24,14 @@
       async function MaybeStartCapturing() {
         if (!track || track.readyState != "live") {
           try {
-            video_out.srcObject = await navigator.mediaDevices.getDisplayMedia({
+            video.srcObject = await navigator.mediaDevices.getDisplayMedia({
               preferCurrentTab: true,
               cursor: "never", // TODO: crbug.com/1266126
             });
-            [track] = video_out.srcObject.getVideoTracks();
+            [track] = video.srcObject.getVideoTracks();
             track.onended = () => {
               pipButton.disabled = true;
-              video_out.srcObject = undefined;
+              video.srcObject = undefined;
               if (document.pictureInPictureElement) {
                 document.exitPictureInPicture();
               }
@@ -51,26 +51,26 @@
       }
 
       async function OnSourceSelected(source) {
-        video_out.style = "border: 2px solid;";
+        video.style = "border: 2px solid;";
         if (IsReady() && (await MaybeStartCapturing())) {
-          video_out.pause();
+          video.pause();
           await track.cropTo(cropIDs[source]);
-          video_out.play();
+          video.play();
         }
       }
 
       async function OnUncroppedSelected() {
         if (IsReady() && (await MaybeStartCapturing())) {
           // TODO: This should not be hard-coded, just capped to the size of the div.
-          video_out.style = "border: 2px solid; width: 500px; height: 500px;";
-          video_out.pause();
+          video.style = "border: 2px solid; width: 500px; height: 500px;";
+          video.pause();
           track.cropTo("");
-          video_out.play();
+          video.play();
         }
       }
 
       function OnPipClicked() {
-        video_out.requestPictureInPicture();
+        video.requestPictureInPicture();
       }
 
       function onBroadcastChannelMessage(serializedMessage) {
