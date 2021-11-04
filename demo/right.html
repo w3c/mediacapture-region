@@ -74,6 +74,7 @@
       }
 
       function onBroadcastChannelMessage(serializedMessage) {
+        console.log(`Got ${serializedMessage.data}`);
         try {
           const msg = JSON.parse(serializedMessage.data);
           cropIDs.push(msg.cropID);
