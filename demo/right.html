@@ -7,9 +7,9 @@
     <br /><br /><br />
     <video id="video" autoplay playsinline style="border: none"></video>
     <br /><br /><br />
-    <button id="button0" onclick="OnSourceSelected(0);">Source #1</button>
-    <button id="button1" onclick="OnSourceSelected(1);">Source #2</button>
-    <button id="uncropped" onclick="OnUncroppedSelected();">Uncropped</button>
+    <button id="button0" onclick="OnSourceSelected(0);" disabled>Source #1</button>
+    <button id="button1" onclick="OnSourceSelected(1);" disabled>Source #2</button>
+    <button id="uncropped" onclick="OnUncroppedSelected();" disabled>Uncropped</button>
     <br />
     <p>
       If you can observe a shimmering effect, that's an unrelated issue. Get around it by popping
@@ -22,6 +22,9 @@
       let track;
       let cropIDs = [];
       let pip;
+
+      const broadcastChannel = new BroadcastChannel("region-capture-demo");
+      broadcastChannel.onmessage = onBroadcastChannelMessage;
 
       async function MaybeStartCapturing() {
         if (!track || track.readyState != "live") {
@@ -39,8 +42,6 @@
               }
             };
           } catch (e) {
-            // TODO
-            console.error(`${e}`);
             return false;
           }
         }
@@ -58,8 +59,6 @@
           video.pause();
           await track.cropTo(cropIDs[source]);
           video.play();
-        } else {
-          console.error("Oops?");
         }
       }
 
@@ -78,17 +77,23 @@
       }
 
       function onBroadcastChannelMessage(serializedMessage) {
-        console.log(`Got ${serializedMessage.data}`);
         try {
           const msg = JSON.parse(serializedMessage.data);
-          cropIDs.push(msg.cropID);
+          if (msg.init) {
+            init();
+          } else if (msg.cropID) {
+            cropIDs.push(msg.cropID);
+          }
         } catch (error) {
           console.error(`${error}`);
         }
       }
 
-      const broadcastChannel = new BroadcastChannel("region-capture-demo");
-      broadcastChannel.onmessage = onBroadcastChannelMessage;
+      function init() {
+        ["button0", "button1", "uncropped"].forEach((buttonId) => {
+          document.getElementById(buttonId).disabled = false;
+        });
+      }
     </script>
   </body>
 </html>

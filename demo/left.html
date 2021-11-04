@@ -39,6 +39,14 @@
       }, 100);
 
       const broadcastChannel = new BroadcastChannel("region-capture-demo");
+      broadcastChannel.onmessage = onBroadcastChannelMessage;
+
+      function onBroadcastChannelMessage(serializedMessage) {
+        const msg = JSON.parse(serializedMessage.data);
+        if (msg.init) {
+          init();
+        }
+      }
 
       function postCropID(cropID) {
         broadcastChannel.postMessage(JSON.stringify({ cropID: cropID }));
@@ -48,8 +56,6 @@
         postCropID(await navigator.mediaDevices.produceCropId(document.getElementById("div1")));
         postCropID(await navigator.mediaDevices.produceCropId(document.getElementById("div2")));
       }
-
-      init();
     </script>
   </body>
 </html>

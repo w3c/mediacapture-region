@@ -17,10 +17,10 @@
     <div id="topLevelContainer" hidden>
       <div class="row">
         <div class="column">
-          <iframe src="left.html" width="100%" height="100%"></iframe>
+          <iframe src="left.html" width="100%" height="100%" onload="OnIframeLoaded();"></iframe>
         </div>
         <div class="column">
-          <iframe src="right.html" width="100%" height="100%"></iframe>
+          <iframe src="right.html" width="100%" height="100%" onload="OnIframeLoaded();"></iframe>
         </div>
       </div>
     </div>
@@ -42,6 +42,15 @@
         topLevelContainer.hidden = false;
       } else {
         error.hidden = false;
+      }
+
+      let loadedIframesCount = 0;
+      function OnIframeLoaded() {
+        if (++loadedIframesCount != 2) {
+          return;
+        }
+        const broadcastChannel = new BroadcastChannel("region-capture-demo");
+        broadcastChannel.postMessage(JSON.stringify({ init: true }));
       }
     </script>
   </body>
