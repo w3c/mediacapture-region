@@ -58,6 +58,8 @@
           video.pause();
           await track.cropTo(cropIDs[source]);
           video.play();
+        } else {
+          console.error("Oops?");
         }
       }
 
