@@ -11,6 +11,8 @@
     <button id="button1" onclick="OnSourceSelected(1);" disabled>Source #2</button>
     <button id="uncropped" onclick="OnUncroppedSelected();" disabled>Uncropped</button>
     <br />
+    <p id="errorMessage" style="color: red"></p>
+    <br />
     <p>
       If you can observe a shimmering effect, that's an unrelated issue. Get around it by popping
       into picture-in-picture mode.
@@ -19,6 +21,7 @@
     <script>
       const video = document.getElementById("video");
       const pipButton = document.getElementById("pipButton");
+      const errorMessage = document.getElementById("errorMessage");
       let track;
       let cropIDs = [];
       let pip;
@@ -27,35 +30,48 @@
       broadcastChannel.onmessage = onBroadcastChannelMessage;
 
       async function MaybeStartCapturing() {
-        if (!track || track.readyState != "live") {
-          try {
-            video.srcObject = await navigator.mediaDevices.getDisplayMedia({
-              preferCurrentTab: true,
-              cursor: "never", // TODO: crbug.com/1266126
-            });
-            [track] = video.srcObject.getVideoTracks();
-            track.onended = () => {
-              pipButton.disabled = true;
-              video.srcObject = undefined;
-              if (document.pictureInPictureElement) {
-                document.exitPictureInPicture();
-              }
-            };
-          } catch (e) {
-            return false;
-          }
+        errorMessage.innerHTML = "";
+
+        if (track && track.readyState == "live") {
+          return true;
         }
+
+        let stream;
+        try {
+          stream = await navigator.mediaDevices.getDisplayMedia({
+            preferCurrentTab: true,
+          });
+        } catch (e) {
+          return false;
+        }
+
+        [track] = stream.getVideoTracks();
+        if (!track.label.startsWith("current-web-contents-media-stream://")) {
+          track.stop();
+          track = undefined;
+          errorMessage.innerHTML =
+            "This demo only works when capturing the current tab.<br />" +
+            "Cropping another tab is a future extension of the API.<br />" +
+            "Cropping anything but a tab is not currently planned.";
+          return false;
+        }
+
+        track.onended = () => {
+          pipButton.disabled = true;
+          video.srcObject = undefined;
+          if (document.pictureInPictureElement) {
+            document.exitPictureInPicture();
+          }
+        };
+
+        video.srcObject = stream;
         pipButton.disabled = false;
         return true;
       }
 
-      function IsReady() {
-        return cropIDs.length == 2;
-      }
-
       async function OnSourceSelected(source) {
         video.style = "border: none;";
-        if (IsReady() && (await MaybeStartCapturing())) {
+        if (await MaybeStartCapturing()) {
           video.pause();
           await track.cropTo(cropIDs[source]);
           video.play();
@@ -63,7 +79,7 @@
       }
 
       async function OnUncroppedSelected() {
-        if (IsReady() && (await MaybeStartCapturing())) {
+        if (await MaybeStartCapturing()) {
           // TODO: This should not be hard-coded, just capped to the size of the div.
           video.style = "border: none; width: 500px; height: 500px;";
           video.pause();
