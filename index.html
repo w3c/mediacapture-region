@@ -41,13 +41,14 @@
       <section id="generic-use-case">
         <h3>Generic Use-Case</h3>
         <p>
-          Consider an application consisting of multiple collaborating documents. Assume one of
-          these documents, <var>CAPTURING-DOC</var> uses {{MediaDevices/getDisplayMedia()}} or
-          <code>getViewportMedia</code> to capture the entire current [=browsing context=]. If this
-          document then wishes to crop the video track to the coordinates of some sub-section
-          <var>CAPTURE-TARGET</var>of a collaborating document <var>CAPTURED-DOC</var>, how can
-          <var>CAPTURING-DOC</var> do so performantly and reliably? Recall especially that changes
-          in layout due to scrolling, zooming or window resizing present additional challenges.
+          Consider an application consisting of multiple collaborating documents cohabitating in one
+          [=browsing context=]. Assume one of these documents, <var>CAPTURING-DOC</var> uses
+          {{MediaDevices/getDisplayMedia()}} or <code>getViewportMedia</code> to capture the entire
+          current [=browsing context=]. If this document then wishes to crop the video track to the
+          coordinates of some sub-section <var>CAPTURE-TARGET</var> of a collaborating document
+          <var>CAPTURED-DOC</var>, how can <var>CAPTURING-DOC</var> do so performantly and reliably?
+          Recall especially that changes in layout due to scrolling, zooming or window resizing
+          present additional challenges.
         </p>
       </section>
       <section id="generic-use-case">
