@@ -10,8 +10,8 @@
     <section id="abstract">
       <h2>Abstract</h2>
       <p>
-        This document introduces an API for cropping a video track derived from display-capture of the
-        current [=browsing context=]. A natural extension of the API to allow cropping arbitrary
+        This document introduces an API for cropping a video track derived from display-capture of
+        the current [=browsing context=]. A natural extension of the API to allow cropping arbitrary
         [=browsing contexts=] is possible in the future.
       </p>
     </section>
@@ -31,8 +31,9 @@
       <p>
         Recall that when {{MediaDevices/getDisplayMedia()}} is called and the user chooses to share
         some [=display-surface=], exactly one video track is produced. If the user chooses to
-        capture a [=browser=] [=display-surface=], we define the resulting capture session as
-        <dfn>self-capture</dfn>, and this video track a <dfn>self-capture video track</dfn>.
+        capture a [=browser=] [=display-surface=] associated with the [=browsing context=] from
+        which {{MediaDevices/getDisplayMedia()}} was called, we define the resulting capture session
+        as <dfn>self-capture</dfn>, and this video track a <dfn>self-capture video track</dfn>.
       </p>
     </section>
     <section id="use-cases">
