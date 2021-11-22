@@ -29,7 +29,7 @@ A two-pronged solution is presented:
 ## Crop-ID production
 We introduce `navigator.mediaDevices.produceCropId()`.
 ```webidl
-MediaDevices {
+partial interface MediaDevices {
   Promise<DOMString>
   produceCropId((HTMLDivElement or HTMLIFrameElement) target);
 };
