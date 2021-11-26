@@ -23,19 +23,19 @@ Moreover, consider that it is likely that the two collaborating applications are
 # Solution
 ## Solution Overview
 A two-pronged solution is presented:
-* **Crop-ID production:** A mechanism for tagging an HTMLElement as a potential target for the cropping mechanism.
+* **CropTarget production:** A mechanism for tagging an HTMLElement as a potential target for the cropping mechanism.
 * **Cropping mechanism**: A mechanism for instructing the user agent to start cropping a video track to the contours of a previously tagged HTMLElement, or to stop such cropping and revert a track to its uncropped state.
 
-## Crop-ID production
-We introduce `navigator.mediaDevices.produceCropId()`.
+## CropTarget production
+We introduce `navigator.mediaDevices.produceCropTarget()`.
 ```webidl
 partial interface MediaDevices {
   Promise<DOMString>
-  produceCropId((HTMLDivElement or HTMLIFrameElement) target);
+  produceCropTarget(HTMLElement target);
 };
 ```
-Given an HTMLElement, `produceCropId()` produces a UUID that can uniquely identify that element to our second mechanism - the cropping mechanism.
-(The `Promise` returned by `produceCropId()` is only resolved when the ID is ready for use, allowing the browser time to set up prerequisites and propagate state cross-process.)
+Given an HTMLElement, `produceCropTarget()` produces an opaque class that uniquely identifies that element to our second mechanism - the cropping mechanism.
+(The `Promise` returned by `produceCropTarget()` is only resolved when the CropTarget is ready for use, allowing the browser time to set up prerequisites and propagate state cross-process.)
 
 ## Cropping mechanism
 We introduce a `cropTo()` method, which we expose on all video tracks derived of tab-capture.
@@ -45,8 +45,8 @@ interface BrowserCaptureMediaStreamTrack : FocusableMediaStreamTrack {
   Promise<undefined> cropTo(DOMString cropTarget);
 };
 ```
-Given a UUID, `cropTo()` starts cropping the video track to the contours of the referenced HTMLElement.
-Given an empty string, `cropTo()` reverts a video track to its uncropped state.
+Given a CropTarget, `cropTo()` starts cropping the video track to the contours of the referenced HTMLElement.
+Given `undefined`, `cropTo()` reverts a video track to its uncropped state.
 "On-the-fly" changing of crop-targets is possible.
 
 # Code Samples
@@ -56,11 +56,11 @@ Given an empty string, `cropTo()` reverts a video track to its uncropped state.
 /////////////////////////////////
 
 const mainContentArea = navigator.getElementById('mainContentArea');
-const cropId = await navigator.mediaDevices.produceCropId(mainContentArea);
-sendCropId(cropId);
+const cropTarget = await navigator.mediaDevices.produceCropTarget(mainContentArea);
+sendCropTarget(cropTarget);
 
-function sendCropId(cropId) {
-  // Can send the crop-ID to another document in this browsing context
+function sendCropTarget(cropTarget) {
+  // Can send the crop-target to another document in this browsing context
   // using postMessage() or using any other means.
   // Possibly there is no other document, and this is just consumed locally.
 }
@@ -69,14 +69,14 @@ function sendCropId(cropId) {
 // Code in the capturing-document: //
 /////////////////////////////////////
 
-async function startCroppedCapture(cropId) {
+async function startCroppedCapture(cropTarget) {
   const stream = await navigator.mediaDevices.getDisplayMedia();
   const [track] = stream.getVideoTracks();
   if (!!track.cropTo) {
     handleError(stream);
     return;
   }
-  await track.cropTo(cropId);
+  await track.cropTo(cropTarget);
   transmitVideoRemotely(track);
 }
 ```
