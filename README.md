@@ -30,7 +30,7 @@ A two-pronged solution is presented:
 We introduce `navigator.mediaDevices.produceCropTarget()`.
 ```webidl
 partial interface MediaDevices {
-  Promise<DOMString>
+  Promise<CropTarget>
   produceCropTarget(HTMLElement target);
 };
 ```
@@ -42,7 +42,7 @@ We introduce a `cropTo()` method, which we expose on all video tracks derived of
 ```webidl
 [Exposed = Window]
 interface BrowserCaptureMediaStreamTrack : FocusableMediaStreamTrack {
-  Promise<undefined> cropTo(DOMString cropTarget);
+  Promise<undefined> cropTo(CropTarget cropTarget);
 };
 ```
 Given a CropTarget, `cropTo()` starts cropping the video track to the contours of the referenced HTMLElement.
