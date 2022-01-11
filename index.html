@@ -20,8 +20,7 @@
       <h2>Definitions</h2>
       <p>
         This document uses the definition of the following concepts from [[SCREEN-CAPTURE]]:
-        <dfn>display-surface</dfn>, <dfn>browser</dfn> [=display-surface=] and
-        <dfn>window</dfn> [=display-surface=].
+        <dfn>display-surface</dfn> and <dfn>browser</dfn> [=display-surface=].
       </p>
       <p>
         Recall that when {{MediaDevices/getDisplayMedia()}} is called and the user chooses to share
@@ -70,7 +69,7 @@
     </section>
     <section id="solution-overview">
       <h2>Solution Overview</h2>
-      <p>The <dfn>region-capture mechanism</dfn> comprises two parts:</p>
+      <p>The region-capture mechanism comprises two parts:</p>
       <ol>
         <li>
           [=CropTarget production=]: A mechanism for <dfn>tagging</dfn> an {{HTMLElement}} as a
@@ -301,7 +300,7 @@
             Consider a frame produced on a [=cropped=] video track. The user agent calculates the
             intersection of (i) the [=browsing context=]'s viewport and (ii) the bounding box of all
             pixels belonging to the [=crop-session target=]. This intersection is defined as the
-            <dfn>crop-session target's coordinates</dfn> for that frame.
+            crop-session target's coordinates for that frame.
           </p>
         </section>
         <section id="crop-session-edge-cases">
