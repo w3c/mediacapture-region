@@ -80,3 +80,6 @@ async function startCroppedCapture(cropTarget) {
   transmitVideoRemotely(track);
 }
 ```
+
+# Changelog
+See [dedicated file](https://github.com/eladalon1983/region-capture/blob/main/CHANGELOG.md).
