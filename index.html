@@ -65,6 +65,20 @@
           solutions which are too slow to react to changes in layout (e.g. scrolling, zooming and
           window-size changes).
         </p>
+        <p>
+          It is worthwhile to note that most applications would likey prefer to use
+          <code>getViewportMedia</code> in such scenarios. However, as of this writing,
+          <code>getViewportMedia</code> is still unspecified and unimplemented. It will have
+          non-trivial requirements whose adoption will take some time and effort. As such, many
+          applications will likely use a combination of {{MediaDevices/getDisplayMedia()}} and
+          Region Capture for some time to come.
+        </p>
+        <p>
+          The combination of {{MediaDevices/getDisplayMedia()}} and Region Capture is also useful
+          for applications that allow the users to choose whichever [=display-surface=] they wish,
+          but offer distinct functionality depending on whether users choose to [=self-capture=] or,
+          conversely, choose to capture a window or monitor.
+        </p>
       </section>
     </section>
     <section id="solution-overview">
