@@ -77,7 +77,9 @@
           The combination of {{MediaDevices/getDisplayMedia()}} and Region Capture is also useful
           for applications that allow the users to choose whichever [=display-surface=] they wish,
           but offer distinct functionality depending on whether users choose to [=self-capture=] or,
-          conversely, choose to capture a window or monitor.
+          conversely, choose to capture a window or monitor. Such applications would only succeed
+          in using Region Capture if the user chose to [=self-capture=]; otherwise, the attempt to
+          apply cropping would be a no-op.
         </p>
       </section>
     </section>
