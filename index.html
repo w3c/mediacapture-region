@@ -76,23 +76,23 @@
           The combination of {{MediaDevices/getDisplayMedia()}} and Region Capture is also useful
           for applications that allow the users to choose whichever [=display-surface=] they wish,
           but offer distinct functionality depending on whether users choose to [=self-capture=] or,
-          conversely, choose to capture a window or monitor. Such applications would only succeed
-          in using Region Capture if the user chose to [=self-capture=]; otherwise, the attempt to
+          conversely, choose to capture a window or monitor. Such applications would only succeed in
+          using Region Capture if the user chose to [=self-capture=]; otherwise, the attempt to
           apply cropping would be a no-op.
         </p>
       </section>
-      <section id="scope">
-        <h3>Scope</h3>
-        <p>
-          As presently defined, {{BrowserCaptureMediaStreamTrack/cropTo}}(<var>ID</var>) returns a
-          [=rejected=] {{Promise}} if the <var>ID</var> is not associated with an {{HTMLElement}}
-          within the current [=browsing context=]. That means that all of the mechanisms introduced by
-          this document are only relevant for [=self-capture=]. An immediate corollary is that, since
-          both the capturing as well as captured documents live within the same [=browsing context=],
-          navigation of their (shared) top-level document would break off the capture, and therefore
-          also the cropping session.
-        </p>
-       </scope>
+    </section>
+    <section id="scope">
+      <h2>Scope</h2>
+      <p>
+        As presently defined, {{BrowserCaptureMediaStreamTrack/cropTo}}(<var>ID</var>) returns a
+        [=rejected=] {{Promise}} if the <var>ID</var> is not associated with an {{HTMLElement}}
+        within the current [=browsing context=]. That means that all of the mechanisms introduced by
+        this document are only relevant for [=self-capture=]. An immediate corollary is that, since
+        both the capturing as well as captured documents live within the same [=browsing context=],
+        navigation of their (shared) top-level document would break off the capture, and therefore
+        also the cropping session.
+      </p>
     </section>
     <section id="solution-overview">
       <h2>Solution Overview</h2>
