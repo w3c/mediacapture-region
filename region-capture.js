@@ -1,15 +1,16 @@
 var respecConfig = {
   group: "webrtc",
-  specStatus: "unofficial",
+  specStatus: "ED",
   github: {
-    repoURL: "https://github.com/eladalon1983/region-capture/",
-    branch: "master",
+    repoURL: "https://github.com/w3c/medicapture-region/",
+    branch: "main",
   },
   editors: [
     {
       name: "Elad Alon",
       email: "eladalon@google.com",
       company: "Google",
+      w3cId:  118124
     },
   ],
   xref: ["html", "infra", "permissions", "permissions-policy", "dom", "mediacapture-streams", "webidl", "screen-capture"],
