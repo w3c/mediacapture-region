@@ -2,7 +2,7 @@ var respecConfig = {
   group: "webrtc",
   specStatus: "ED",
   github: {
-    repoURL: "https://github.com/w3c/medicapture-region/",
+    repoURL: "https://github.com/w3c/mediacapture-region/",
     branch: "main",
   },
   editors: [
