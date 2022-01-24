@@ -1,8 +1,12 @@
 <html>
   <head>
-    <meta http-equiv="origin-trial" content="A5ivOPFbp8qoDO1hFcHngvkQWOZs/3cLVdqGMqPS1kNh0o+9kcEingaCugowUVKshsHS6xoHGGNrpl1atJHKtAoAAABieyJvcmlnaW4iOiAiaHR0cHM6Ly9lbGFkYWxvbjE5ODMuZ2l0aHViLmlvOjQ0MyIsICJmZWF0dXJlIjogIlJlZ2lvbkNhcHR1cmUiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=">
+    <meta
+      http-equiv="origin-trial"
+      content="A5ivOPFbp8qoDO1hFcHngvkQWOZs/3cLVdqGMqPS1kNh0o+9kcEingaCugowUVKshsHS6xoHGGNrpl1atJHKtAoAAABieyJvcmlnaW4iOiAiaHR0cHM6Ly9lbGFkYWxvbjE5ODMuZ2l0aHViLmlvOjQ0MyIsICJmZWF0dXJlIjogIlJlZ2lvbkNhcHR1cmUiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0="
+    />
     <link rel="icon" href="data:;base64,=" />
   </head>
+
   <body>
     <h1>Video Conferencing App</h1>
     <br /><br /><br />
@@ -19,13 +23,19 @@
       into picture-in-picture mode.
     </p>
     <button id="pipButton" onclick="OnPipClicked();" disabled>PiP</button>
+    <button id="startRecordingButton" onclick="startRecording();" disabled>Start Recording</button>
+    <button id="stopRecordingButton" onclick="stopRecording();" disabled>Stop Recording</button>
     <script>
       const video = document.getElementById("video");
       const pipButton = document.getElementById("pipButton");
+      const startRecordingButton = document.getElementById("startRecordingButton");
+      const stopRecordingButton = document.getElementById("stopRecordingButton");
       const errorMessage = document.getElementById("errorMessage");
       let track;
       let cropIDs = [];
       let pip;
+      let recordedChunks = [];
+      let mediaRecorder;
 
       const broadcastChannel = new BroadcastChannel("region-capture-demo");
       broadcastChannel.onmessage = onBroadcastChannelMessage;
@@ -59,6 +69,9 @@
 
         track.onended = () => {
           pipButton.disabled = true;
+          stopRecording();
+          startRecordingButton.disabled = true;
+          stopRecordingButton.disabled = true;
           video.srcObject = undefined;
           if (document.pictureInPictureElement) {
             document.exitPictureInPicture();
@@ -67,6 +80,7 @@
 
         video.srcObject = stream;
         pipButton.disabled = false;
+        startRecordingButton.disabled = false;
         return true;
       }
 
@@ -93,6 +107,44 @@
         video.requestPictureInPicture();
       }
 
+      function startRecording() {
+        // VP9-support assumed. This is not the focus of this demo. :-)
+        mediaRecorder = new MediaRecorder(video.srcObject, { mimeType: "video/webm;codecs=vp9" });
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data.size > 0) {
+            recordedChunks.push(event.data);
+          }
+        };
+        mediaRecorder.start();
+
+        startRecordingButton.disabled = true;
+        stopRecordingButton.disabled = false;
+      }
+
+      function stopRecording() {
+        mediaRecorder.stop();
+
+        startRecordingButton.disabled = false;
+        stopRecordingButton.disabled = true;
+
+        setTimeout(() => {
+          const blob = new Blob(recordedChunks, {
+            type: "video/webm",
+          });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          document.body.appendChild(a);
+          a.style = "display: none";
+          a.href = url;
+          a.download = "region_capture_demo_ " + timestamp() + ".webm";
+          a.click();
+          window.URL.revokeObjectURL(url);
+
+          recordedChunks = [];
+          mediaRecorder = undefined;
+        });
+      }
+
       function onBroadcastChannelMessage(serializedMessage) {
         try {
           const msg = JSON.parse(serializedMessage.data);
@@ -104,6 +156,18 @@
         } catch (error) {
           console.error(`${error}`);
         }
+      }
+
+      function timestamp() {
+        function padDate(input, length = 2) {
+          return input.toString().padStart(length, "0");
+        }
+        const date = new Date();
+        return (
+          [date.getFullYear(), padDate(date.getMonth() + 1), padDate(date.getDay())].join("-") +
+          "_" +
+          [padDate(date.getHours()), padDate(date.getMinutes())].join("")
+        );
       }
 
       function init() {
