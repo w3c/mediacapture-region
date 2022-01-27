@@ -210,9 +210,8 @@
         </p>
         <p>
           We specify that if the user chooses to capture a [=browser=] [=display-surface=], the user
-          agent MUST instantiate the video track as either {{MediaStreamTrack}} or some sub-class of
-          it. For the purposes of the current document, designate the track's class as
-          <dfn>MediaStreamTrackOrSubclassThereof</dfn>.
+          agent MUST instantiate the video track as a {{MediaStreamTrack}}</p>
+        <p class="note">The Working Group is <a href="https://github.com/w3c/mediacapture-region/issues/3">discussing the class hierarchy for this new class</a>.
         </p>
         <p>
           For simplicity's sake, this document assumes that a subclass called
@@ -222,7 +221,7 @@
         <p>The track MUST be initially [=uncropped=].</p>
         <pre class="idl">
           [Exposed = Window]
-          interface BrowserCaptureMediaStreamTrack : MediaStreamTrackOrSubclassThereof {
+          interface BrowserCaptureMediaStreamTrack : MediaStreamTrack {
             Promise&lt;undefined&gt; cropTo(CropTarget? cropTarget);
             BrowserCaptureMediaStreamTrack clone();
           };
