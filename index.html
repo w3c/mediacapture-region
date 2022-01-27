@@ -15,7 +15,8 @@
       </p>
     </section>
     <section id="sotd">
-      The Web Real-Time Communications Working Group is iterating on this proposal before proposing a First Public Working Draft.
+      The Web Real-Time Communications Working Group is iterating on this proposal before proposing
+      a First Public Working Draft.
     </section>
     <section id="conformance"></section>
     <section id="definitions">
@@ -206,23 +207,19 @@
         <p>
           Recall that, as per [[SCREEN-CAPTURE]], when {{MediaDevices/getDisplayMedia()}} is called,
           it returns a {{Promise}}&lt;{{MediaStream}}&gt;, and that this {{MediaStream}} contains
-          exactly one video track.
+          exactly one video track, whose type is {{MediaStreamTrack}}.
         </p>
         <p>
           We specify that if the user chooses to capture a [=browser=] [=display-surface=], the user
-          agent MUST instantiate the video track as either {{MediaStreamTrack}} or some sub-class of
-          it. For the purposes of the current document, designate the track's class as
-          <dfn>MediaStreamTrackOrSubclassThereof</dfn>.
-        </p>
-        <p>
-          For simplicity's sake, this document assumes that a subclass called
-          {{BrowserCaptureMediaStreamTrack}} is used by the user agent, but user agents MAY use
-          either {{MediaStreamTrack}} itself, or any other sub-class of {{MediaStreamTrack}}.
+          agent MUST instantiate the video track as either {{MediaStreamTrack}}, or as some
+          sub-class of {{MediaStreamTrack}}, and that {{BrowserCaptureMediaStreamTrack/cropTo}} MUST
+          be exposed on this track. For simplicity's sake, this document assumes that a subclass
+          called {{BrowserCaptureMediaStreamTrack}} is used by the user agent.
         </p>
         <p>The track MUST be initially [=uncropped=].</p>
         <pre class="idl">
           [Exposed = Window]
-          interface BrowserCaptureMediaStreamTrack : MediaStreamTrackOrSubclassThereof {
+          interface BrowserCaptureMediaStreamTrack : MediaStreamTrack {
             Promise&lt;undefined&gt; cropTo(CropTarget? cropTarget);
             BrowserCaptureMediaStreamTrack clone();
           };
