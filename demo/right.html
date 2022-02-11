@@ -25,12 +25,15 @@
     <button id="pipButton" onclick="OnPipClicked();" disabled>PiP</button>
     <button id="startRecordingButton" onclick="startRecording();" disabled>Start Recording</button>
     <button id="stopRecordingButton" onclick="stopRecording();" disabled>Stop Recording</button>
+    <br />
+    <p id="muteIndicator"></p>
     <script>
       const video = document.getElementById("video");
       const pipButton = document.getElementById("pipButton");
       const startRecordingButton = document.getElementById("startRecordingButton");
       const stopRecordingButton = document.getElementById("stopRecordingButton");
       const errorMessage = document.getElementById("errorMessage");
+      const muteIndicator = document.getElementById("muteIndicator");
       let track;
       let cropIDs = [];
       let pip;
@@ -67,6 +70,10 @@
           return false;
         }
 
+        track.onmute = () => muteIndicator.innerHTML = "State: muted";
+        track.onunmute = () => muteIndicator.innerHTML = "State: active";
+        muteIndicator.innerHTML = "State: active";
+
         track.onended = () => {
           pipButton.disabled = true;
           stopRecording();
@@ -76,6 +83,7 @@
           if (document.pictureInPictureElement) {
             document.exitPictureInPicture();
           }
+          muteIndicator.innerHTML = "";
         };
 
         video.srcObject = stream;
