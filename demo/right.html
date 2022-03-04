@@ -106,7 +106,7 @@
           // TODO: This should not be hard-coded, just capped to the size of the div.
           video.style = "border: none; width: 500px; height: 500px;";
           video.pause();
-          track.cropTo("");
+          await track.cropTo("");
           video.play();
         }
       }
