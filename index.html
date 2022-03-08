@@ -354,12 +354,10 @@
               </ul>
             </div>
             <p>
-              The user agent MUST mute [=cropped=] tracks with an [=empty crop-session target=].
-            </p>
-            <p>
-              The user agent MUST unmute [=cropped=] tracks which it previously muted, if they
-              either become [=uncropped=] or if their [=crop-session target=] stops being [=empty
-              crop-session target|empty=].
+              The user agent MUST NOT produce new frames on tracks with an [=empty crop-session
+              target=]. For such a track, the user agent MUST resume the production of frames if the
+              track either become [=uncropped=], or if its [=crop-session target=] stops being
+              [=empty crop-session target|empty=].
             </p>
           </section>
           <section id="disconnected-crop-target">
@@ -375,11 +373,12 @@
               <a
                 href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Memory_Management#mark-and-sweep_algorithm"
                 >unreachable</a
-              >, leaving it permanently in the muted state. Nevertheless, the user agent MUST treat
-              a [=disconnected crop-session target=] the same way it treats an [=empty crop-session
-              target=]. The application may call {{BrowserCaptureMediaStreamTrack/cropTo}} on the
-              track with either {{undefined}} or a new {{CropTarget}}, thereby allowing the track to
-              be unmuted.
+              >, in which case it would not produce any new frames. Nevertheless, the user agent
+              MUST treat a [=disconnected crop-session target=] the same way it treats an [=empty
+              crop-session target=]. The application may call
+              {{BrowserCaptureMediaStreamTrack/cropTo}} on the track with either {{undefined}} or a
+              new {{CropTarget}}, thereby allowing the production of frames on the track to be
+              resumed.
             </p>
           </section>
         </section>
