@@ -167,17 +167,25 @@
           steps =], given <var>value</var> and <var>serialized</var>, are:
         </p>
         <ol>
-          <li>Make <var>serialized</var> a randomly generated, globally unique {{DOMString}}.</li>
+          <li>
+            Set <var>serialized</var>.[[\Data]] a randomly generated, globally unique {{DOMString}}.
+          </li>
         </ol>
         <p>
           Their <a>deserialization steps</a>, given <var>serialized</var> and <var>value</var>, are:
         </p>
         <ol>
           <li>
-            If <var>serialized</var> was previously produced by serializing a {{CropTarget}} in the
-            current top-level [=browsing context=], or in any of its descendent [=browsing
-            contexts=], then set <var>value</var> to that {{CropTarget}}. Otherwise, set
-            <var>value</var> to {{undefined}}.
+            Compare <var>serialized</var>.[[\Data]] against a record of all {{CropTargets}} produced
+            and serialized thus far in the current top-level [=browsing context=], or in any of its
+            descendent [=browsing contexts=].
+            <ol>
+              <li>
+                If <var>serialized</var>.[[\Data]] was obtained by serializing previous
+                {{CropTarget}}, then set <var>value</var> to an equivalent {{CropTarget}}.
+              </li>
+              <li>Otherwise, set <var>value</var> to {{undefined}}.</li>
+            </ol>
           </li>
         </ol>
       </section>
