@@ -153,6 +153,12 @@
           };
         </pre>
         <dl data-link-for="CropTarget" data-dfn-for="CropTarget"></dl>
+        <div class="note">
+          <p>
+            There is still no consensus over the name for {{CropTarget}}. This is under discussion
+            on <a href="https://github.com/w3c/mediacapture-region/issues/18">issue #18</a>.
+          </p>
+        </div>
       </section>
       <section id="producecroptarget-method">
         <h3>MediaDevices.produceCropTarget</h3>
@@ -198,6 +204,21 @@
             </p>
           </dd>
         </dl>
+        <div class="note">
+          <p>There is still no consensus over the following issues:</p>
+          <ul>
+            <li>
+              Whether {{MediaDevices/produceCropTarget()}} should be exposed on {{MediaDevices}}, on
+              {{HTMLElement}} or on {{Element}}. This is under discussion on
+              <a href="https://github.com/w3c/mediacapture-region/issues/11">issue #11</a>.
+            </li>
+            <li>
+              Whether {{MediaDevices/produceCropTarget()}} should return a {{CropTarget}} or a
+              {{Promise}}&lt;{{CropTarget}}&gt;. This is under discussion on
+              <a href="https://github.com/w3c/mediacapture-region/issues/17">issue #17</a>.
+            </li>
+          </ul>
+        </div>
       </section>
     </section>
     <section id="cropping-a-track">
