@@ -181,17 +181,17 @@
             <p>
               When {{MediaDevices/produceCropTarget}} is first called on a given <var>element</var>,
               the user agent MUST produce a new unique {{CropTarget}} and permanently associate it
-              with <var>element</var>. The user agent MUST return a {{Promise}} <var>P</var>. The
-              user agent MUST resolve <var>P</var> only after it has finished all the necessary
+              with <var>element</var>. The user agent MUST return a {{Promise}} <var>p</var>. The
+              user agent MUST resolve <var>p</var> only after it has finished all the necessary
               internal propagation of state associated with the new {{CropTarget}}, at which point
               the user agent MUST be ready to receive the new {{CropTarget}} as a valid parameter to
               {{BrowserCaptureMediaStreamTrack/cropTo}}.
             </p>
             <p>
               Subsequent calls to {{MediaDevices/produceCropTarget}} MUST return a new {{Promise}}
-              that behaves the same way <var>P</var> does. Specifically, the new {{Promise}} MUST
-              resolve after <var>P</var>, and MUST resolve to the same {{CropTarget}} as
-              <var>P</var>.
+              that behaves the same way <var>p</var> does. Specifically, the new {{Promise}} MUST
+              resolve after <var>p</var>, and MUST resolve to the same {{CropTarget}} as
+              <var>p</var>.
             </p>
             <p>
               When cloning an {{HTMLElement}} on which {{MediaDevices/produceCropTarget}} was
@@ -266,12 +266,12 @@
                   [=rejected=] with an {{UnknownError}}.
                 </p>
               </li>
-              <li>Let <var>P</var> be a new {{Promise}}.</li>
+              <li>Let <var>p</var> be a new {{Promise}}.</li>
               <li>Run the following steps in parallel:</li>
               <ol>
                 <li>
                   If <var>cropTarget</var> is neither {{undefined}} nor a [=valid CropTarget=],
-                  reject <var>P</var> with a {{NotAllowedError}} and abort these steps.
+                  reject <var>p</var> with a {{NotAllowedError}} and abort these steps.
                 </li>
                 <li>
                   <p>
@@ -297,7 +297,7 @@
                   <p>
                     Call the track's state before this method invocation <var>PRE-STATE</var>, and
                     after this method invocation <var>POST-STATE</var>. The user agent MUST resolve
-                    <var>P</var> when it is guaranteed that no more frames cropped (or uncropped)
+                    <var>p</var> when it is guaranteed that no more frames cropped (or uncropped)
                     according to <var>PRE-STATE</var> have been delivered to the application, and
                     that any additional frames delivered to the application will therefore be
                     cropped (or uncropped) according to either <var>POST-STATE</var> or a later
