@@ -267,44 +267,47 @@
                 </p>
               </li>
               <li>Let <var>p</var> be a new {{Promise}}.</li>
-              <li>Run the following steps in parallel:</li>
-              <ol>
-                <li>
-                  If <var>cropTarget</var> is neither {{undefined}} nor a [=valid CropTarget=],
-                  reject <var>p</var> with a {{NotAllowedError}} and abort these steps.
-                </li>
-                <li>
-                  <p>
-                    If <var>cropTarget</var> is either {{undefined}} or a [=valid CropTarget=], the
-                    user agent MUST update [=this=] video track's [=crop-state=] according to
-                    <var>cropTarget</var>:
-                  </p>
-                  <ol>
-                    <li>
-                      If <var>cropTarget</var> is set to {{undefined}}, the user agent MUST stop
-                      cropping. [=This=] video track reverts to the [=uncropped=] state.
-                    </li>
-                    <li>
-                      If <var>cropTarget</var> is a [=valid CropTarget=], the user agent MUST start
-                      cropping [=this=] video track to the contours of the element referenced by
-                      this {{CropTarget}}. This means that for each new frame produced on the track,
-                      the user agent calculates the bounding box of the pixels belonging to the
-                      element, and crops the frame to the coordinates of this bounding box.
-                    </li>
-                  </ol>
-                </li>
-                <li>
-                  <p>
-                    Call the track's state before this method invocation <var>PRE-STATE</var>, and
-                    after this method invocation <var>POST-STATE</var>. The user agent MUST resolve
-                    <var>p</var> when it is guaranteed that no more frames cropped (or uncropped)
-                    according to <var>PRE-STATE</var> have been delivered to the application, and
-                    that any additional frames delivered to the application will therefore be
-                    cropped (or uncropped) according to either <var>POST-STATE</var> or a later
-                    state.
-                  </p>
-                </li>
-              </ol>
+              <li>
+                <p>Run the following steps in parallel:</p>
+                <ol>
+                  <li>
+                    If <var>cropTarget</var> is neither {{undefined}} nor a [=valid CropTarget=],
+                    reject <var>p</var> with a {{NotAllowedError}} and abort these steps.
+                  </li>
+                  <li>
+                    <p>
+                      If <var>cropTarget</var> is either {{undefined}} or a [=valid CropTarget=],
+                      the user agent MUST update [=this=] video track's [=crop-state=] according to
+                      <var>cropTarget</var>:
+                    </p>
+                    <ul>
+                      <li>
+                        If <var>cropTarget</var> is set to {{undefined}}, the user agent MUST stop
+                        cropping. [=This=] video track reverts to the [=uncropped=] state.
+                      </li>
+                      <li>
+                        If <var>cropTarget</var> is a [=valid CropTarget=], the user agent MUST
+                        start cropping [=this=] video track to the contours of the element
+                        referenced by this {{CropTarget}}. This means that for each new frame
+                        produced on the track, the user agent calculates the bounding box of the
+                        pixels belonging to the element, and crops the frame to the coordinates of
+                        this bounding box.
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <p>
+                      Call the track's state before this method invocation <var>PRE-STATE</var>, and
+                      after this method invocation <var>POST-STATE</var>. The user agent MUST
+                      resolve <var>p</var> when it is guaranteed that no more frames cropped (or
+                      uncropped) according to <var>PRE-STATE</var> have been delivered to the
+                      application, and that any additional frames delivered to the application will
+                      therefore be cropped (or uncropped) according to either
+                      <var>POST-STATE</var> or a later state.
+                    </p>
+                  </li>
+                </ol>
+              </li>
               <li>Return <var>p</var>.</li>
             </ol>
           </dd>
