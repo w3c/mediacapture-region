@@ -321,6 +321,14 @@
                   any additional frames delivered to the application will therefore be cropped (or
                   uncropped) according to either <var>POST-STATE</var> or a later state.
                 </p>
+                <div class="note">
+                  <p>
+                    The timing of the cropTo promise resolution and the timing of the actual cropping of video frames
+                    is observable to JavaScript through <a href="https://w3c.github.io/mediacapture-transform/">
+                    MediaStreamTrack transforms</a>. It is expected that the first newly cropped video frame will
+                    be enqueued on the MediaStreamTrack ReadableStream just after the cropTo promise is resolved.
+                  </p>
+                </div>
               </li>
             </ol>
           </dd>
