@@ -147,12 +147,18 @@
           purpose is to be handed to {{BrowserCaptureMediaStreamTrack/cropTo}} as input.
         </p>
         <pre class="idl">
-          [Exposed = Window]
+          [Exposed=(Window,Worker)]
           interface CropTarget {
             // Intentionally empty; just an opaque identifier.
           };
         </pre>
         <dl data-link-for="CropTarget" data-dfn-for="CropTarget"></dl>
+        <div class="note">
+          <p>
+            There is no consensus yet on the name for {{CropTarget}}. This is under discussion
+            in <a href="https://github.com/w3c/mediacapture-region/issues/18">issue #18</a>.
+          </p>
+        </div>
       </section>
       <section id="producecroptarget-method">
         <h3>MediaDevices.produceCropTarget</h3>
@@ -201,6 +207,26 @@
             </p>
           </dd>
         </dl>
+        <div class="note">
+          <p>There is no consensus yet on the following issues:</p>
+          <ul>
+            <li>
+              Whether {{CropTarget}} is created from {{Element}} instances or from
+              {{HTMLElement}} instances. This is under discussion in
+              <a href="https://github.com/w3c/mediacapture-region/issues/13">issue #13</a>.
+            </li>
+            <li>
+              Whether <code>produceCropTarget()</code> should be exposed on instances of {{MediaDevices}}
+              or on instances of {{HTMLElement}}/{{Element}}. This is under discussion in
+              <a href="https://github.com/w3c/mediacapture-region/issues/11">issue #11</a>.
+            </li>
+            <li>
+              Whether {{MediaDevices/produceCropTarget()}} should return a {{CropTarget}} or a
+              {{Promise}}&lt;{{CropTarget}}&gt;. This is under discussion in
+              <a href="https://github.com/w3c/mediacapture-region/issues/17">issue #17</a>.
+            </li>
+          </ul>
+        </div>
       </section>
     </section>
     <section id="cropping-a-track">
@@ -305,6 +331,14 @@
                       therefore be cropped (or uncropped) according to either
                       <var>POST-STATE</var> or a later state.
                     </p>
+                    <div class="note">
+                      <p>
+                        The timing of the cropTo promise resolution and the timing of the actual cropping of video frames
+                        is observable to JavaScript through <a href="https://w3c.github.io/mediacapture-transform/">
+                        MediaStreamTrack transforms</a>. It is expected that the first newly cropped video frame will
+                        be enqueued on the MediaStreamTrack ReadableStream just after the cropTo promise is resolved.
+                      </p>
+                    </div>
                   </li>
                 </ol>
               </li>
