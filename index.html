@@ -177,24 +177,27 @@
               The first call of {{MediaDevices/produceCropTarget}} on an {{HTMLElement}} of a
               supported type, permanently associates that element with a {{CropTarget}}. Subsequent
               calls return the same {{CropTarget}}. This {{CropTarget}} may be used as input to
-              {{BrowserCaptureMediaStreamTrack/cropTo}}. We define a
-              <dfn>valid CropTarget</dfn> as one returned by a previous call to
-              {{MediaDevices/produceCropTarget()}} in the current [=browsing context=].
+              {{BrowserCaptureMediaStreamTrack/cropTo}}.
+            </p>
+            <p>
+              We define a <dfn>valid CropTarget</dfn> as one returned by a previous call to
+              {{MediaDevices/produceCropTarget()}} in the current top-level document [=browsing
+              context=] or in one of its descendant [=browsing context=].
             </p>
             <p>
               When {{MediaDevices/produceCropTarget}} is first called on a given <var>element</var>,
               the user agent MUST produce a new unique {{CropTarget}} and permanently associate it
-              with <var>element</var>. The user agent MUST return a {{Promise}} <var>P</var>. The
-              user agent MUST resolve <var>P</var> only after it has finished all the necessary
+              with <var>element</var>. The user agent MUST return a {{Promise}} <var>p</var>. The
+              user agent MUST resolve <var>p</var> only after it has finished all the necessary
               internal propagation of state associated with the new {{CropTarget}}, at which point
               the user agent MUST be ready to receive the new {{CropTarget}} as a valid parameter to
               {{BrowserCaptureMediaStreamTrack/cropTo}}.
             </p>
             <p>
               Subsequent calls to {{MediaDevices/produceCropTarget}} MUST return a new {{Promise}}
-              that behaves the same way <var>P</var> does. Specifically, the new {{Promise}} MUST
-              resolve after <var>P</var>, and MUST resolve to the same {{CropTarget}} as
-              <var>P</var>.
+              that behaves the same way <var>p</var> does. Specifically, the new {{Promise}} MUST
+              resolve after <var>p</var>, and MUST resolve to the same {{CropTarget}} as
+              <var>p</var>.
             </p>
             <p>
               When cloning an {{HTMLElement}} on which {{MediaDevices/produceCropTarget}} was
@@ -285,51 +288,61 @@
                   </li>
                 </ul>
                 <p>
-                  When the user agent does not accept <var>cropTarget</var>, it MUST return a new
-                  {{Promise}}, [=rejected=] with an {{UnknownError}}.
+                  If the user agent does not accept <var>cropTarget</var>, return a {{Promise}}
+                  [=rejected=] with an {{UnknownError}}.
                 </p>
               </li>
+              <li>Let <var>p</var> be a new {{Promise}}.</li>
               <li>
-                The user agent MUST return a new {{Promise}} <var>P</var>. The behavior of this
-                {{Promise}} is specified further below.
-              </li>
-              <li>
-                <p>
-                  The user agent MUST update [=this=] video track's [=crop-state=] according to
-                  <var>cropTarget</var>:
-                </p>
-                <ul>
+                <p>Run the following steps in parallel:</p>
+                <ol>
                   <li>
-                    If <var>cropTarget</var> is set to {{undefined}}, the user agent MUST stop
-                    cropping. [=This=] video track reverts to the [=uncropped=] state.
+                    If <var>cropTarget</var> is neither {{undefined}} nor a [=valid CropTarget=],
+                    reject <var>p</var> with a {{NotAllowedError}} and abort these steps.
                   </li>
                   <li>
-                    If <var>cropTarget</var> is a [=valid CropTarget=], the user agent MUST start
-                    cropping [=this=] video track to the contours of the element referenced by this
-                    {{CropTarget}}. This means that for each new frame produced on the track, the
-                    user agent calculates the bounding box of the pixels belonging to the element,
-                    and crops the frame to the coordinates of this bounding box.
+                    <p>
+                      If <var>cropTarget</var> is either {{undefined}} or a [=valid CropTarget=],
+                      the user agent MUST update [=this=] video track's [=crop-state=] according to
+                      <var>cropTarget</var>:
+                    </p>
+                    <ul>
+                      <li>
+                        If <var>cropTarget</var> is set to {{undefined}}, the user agent MUST stop
+                        cropping. [=This=] video track reverts to the [=uncropped=] state.
+                      </li>
+                      <li>
+                        If <var>cropTarget</var> is a [=valid CropTarget=], the user agent MUST
+                        start cropping [=this=] video track to the contours of the element
+                        referenced by this {{CropTarget}}. This means that for each new frame
+                        produced on the track, the user agent calculates the bounding box of the
+                        pixels belonging to the element, and crops the frame to the coordinates of
+                        this bounding box.
+                      </li>
+                    </ul>
                   </li>
-                </ul>
+                  <li>
+                    <p>
+                      Call the track's state before this method invocation <var>PRE-STATE</var>, and
+                      after this method invocation <var>POST-STATE</var>. The user agent MUST
+                      resolve <var>p</var> when it is guaranteed that no more frames cropped (or
+                      uncropped) according to <var>PRE-STATE</var> have been delivered to the
+                      application, and that any additional frames delivered to the application will
+                      therefore be cropped (or uncropped) according to either
+                      <var>POST-STATE</var> or a later state.
+                    </p>
+                    <div class="note">
+                      <p>
+                        The timing of the cropTo promise resolution and the timing of the actual cropping of video frames
+                        is observable to JavaScript through <a href="https://w3c.github.io/mediacapture-transform/">
+                        MediaStreamTrack transforms</a>. It is expected that the first newly cropped video frame will
+                        be enqueued on the MediaStreamTrack ReadableStream just after the cropTo promise is resolved.
+                      </p>
+                    </div>
+                  </li>
+                </ol>
               </li>
-              <li>
-                <p>
-                  Call the track's state before this method invocation <var>PRE-STATE</var>, and
-                  after this method invocation <var>POST-STATE</var>. The user agent MUST resolve
-                  <var>P</var> when it is guaranteed that no more frames cropped (or uncropped)
-                  according to <var>PRE-STATE</var> have been delivered to the application, and that
-                  any additional frames delivered to the application will therefore be cropped (or
-                  uncropped) according to either <var>POST-STATE</var> or a later state.
-                </p>
-                <div class="note">
-                  <p>
-                    The timing of the cropTo promise resolution and the timing of the actual cropping of video frames
-                    is observable to JavaScript through <a href="https://w3c.github.io/mediacapture-transform/">
-                    MediaStreamTrack transforms</a>. It is expected that the first newly cropped video frame will
-                    be enqueued on the MediaStreamTrack ReadableStream just after the cropTo promise is resolved.
-                  </p>
-                </div>
-              </li>
+              <li>Return <var>p</var>.</li>
             </ol>
           </dd>
           <dt>
