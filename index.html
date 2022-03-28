@@ -160,7 +160,8 @@
               <p>Let <var>cropTarget</var> be a new object of type {{CropTarget}}.</p>
             </li>
             <li>
-              <p>Create <var>cropTarget</var>.<dfn data-dfn-for="CropTarget">[[\Element]]</dfn> initialized to <var>element</var>.</p>
+              <p>Let <var>weakRef</var> be a weak reference to <var>element</var>.</p>
+              <p>Create <var>cropTarget</var>.<dfn data-dfn-for="CropTarget">[[\Element]]</dfn> initialized to <var>weakRef</var>.</p>
               <div class="note">
                 <p><var>cropTarget</var> is keeping a weak reference to the element it is representing.
                   In other words, <var>cropTarget</var> will not prevent garbage collection of its element.</p>
