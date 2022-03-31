@@ -90,10 +90,10 @@
       <h2>Scope</h2>
       <p>
         As presently defined, {{BrowserCaptureMediaStreamTrack/cropTo}}(<var>ID</var>) returns a
-        [=rejected=] {{Promise}} if the <var>ID</var> is not associated with an {{HTMLElement}}
-        within the current [=browsing context=]. That means that all of the mechanisms introduced by
-        this document are only relevant for [=self-capture=]. An immediate corollary is that, since
-        both the capturing as well as captured documents live within the same [=browsing context=],
+        [=rejected=] {{Promise}} if the <var>ID</var> is not associated with an {{Element}} within
+        the current [=browsing context=]. That means that all of the mechanisms introduced by this
+        document are only relevant for [=self-capture=]. An immediate corollary is that, since both
+        the capturing as well as captured documents live within the same [=browsing context=],
         navigation of their (shared) top-level document would break off the capture, and therefore
         also the cropping session.
       </p>
@@ -103,12 +103,12 @@
       <p>The region-capture mechanism comprises two parts:</p>
       <ol>
         <li>
-          [=CropTarget production=]: A mechanism for <dfn>tagging</dfn> an {{HTMLElement}} as a
+          [=CropTarget production=]: A mechanism for <dfn>tagging</dfn> an {{Element}} as a
           potential target for the [=cropping mechanism=].
         </li>
         <li>
           [=Cropping mechanism=]: A mechanism for instructing the user agent to start cropping a
-          video track to the contours of a previously [=tagging|tagged=] {{HTMLElement}}, or to stop
+          video track to the contours of a previously [=tagging|tagged=] {{Element}}, or to stop
           such cropping and revert a track to its [=uncropped=] state.
         </li>
       </ol>
@@ -133,9 +133,9 @@
           </li>
           <li>
             <p>
-              [=Tagging=] an {{HTMLElement}} as a potential crop-target allows the user agent to
-              avoid unnecessary work on all other elements, like the calculation of bounding boxes
-              and sending such coordinates cross-process.
+              [=Tagging=] an {{Element}} as a potential crop-target allows the user agent to avoid
+              unnecessary work on all other elements, like the calculation of bounding boxes and
+              sending such coordinates cross-process.
             </p>
           </li>
         </ul>
@@ -212,7 +212,7 @@
         <pre class="idl">
           partial interface MediaDevices {
             Promise&lt;CropTarget&gt;
-            produceCropTarget(HTMLElement element);
+            produceCropTarget(Element element);
           };
         </pre>
         <dl data-link-for="MediaDevices" data-dfn-for="MediaDevices">
@@ -221,9 +221,9 @@
           </dt>
           <dd>
             <p>
-              Calling {{MediaDevices/produceCropTarget}} on an {{HTMLElement}} of a supported type
-              associates that {{HTMLElement}} with a {{CropTarget}}. This {{CropTarget}} may be used
-              as input to {{BrowserCaptureMediaStreamTrack/cropTo}}. We define a
+              Calling {{MediaDevices/produceCropTarget}} on an {{Element}} of a supported type
+              associates that {{Element}} with a {{CropTarget}}. This {{CropTarget}} may be used as
+              input to {{BrowserCaptureMediaStreamTrack/cropTo}}. We define a
               <dfn>valid CropTarget</dfn> as one returned by a previous call to
               {{MediaDevices/produceCropTarget()}} in the current [=browsing context=].
             </p>
@@ -237,8 +237,8 @@
               {{BrowserCaptureMediaStreamTrack/cropTo}}.
             </p>
             <p>
-              When cloning an {{HTMLElement}} on which {{MediaDevices/produceCropTarget}} was
-              previously called, the clone is not associated with any {{CropTarget}}. If
+              When cloning an {{Element}} on which {{MediaDevices/produceCropTarget}} was previously
+              called, the clone is not associated with any {{CropTarget}}. If
               {{MediaDevices/produceCropTarget}} is later called on the clone, a new {{CropTarget}}
               will be assigned to it.
             </p>
@@ -248,14 +248,8 @@
           <p>There is no consensus yet on the following issues:</p>
           <ul>
             <li>
-              Whether {{CropTarget}} is created from {{Element}} instances or from {{HTMLElement}}
-              instances. This is under discussion in
-              <a href="https://github.com/w3c/mediacapture-region/issues/13">issue #13</a>.
-            </li>
-            <li>
               Whether <code>produceCropTarget()</code> should be exposed on instances of
-              {{MediaDevices}} or on instances of {{HTMLElement}}/{{Element}}. This is under
-              discussion in
+              {{MediaDevices}} or on instances of {{Element}}. This is under discussion in
               <a href="https://github.com/w3c/mediacapture-region/issues/11">issue #11</a>.
             </li>
             <li>
@@ -409,7 +403,7 @@
         <section id="crop-session-definitions">
           <h4>Crop-Session Definitions</h4>
           <p>
-            We define an {{HTMLElement}} for which a {{CropTarget}} was produced (through a call to
+            We define an {{Element}} for which a {{CropTarget}} was produced (through a call to
             {{MediaDevices/produceCropTarget}}) as a <dfn>potential crop-target</dfn>.
           </p>
           <p>
