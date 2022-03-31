@@ -147,12 +147,25 @@
           purpose is to be handed to {{BrowserCaptureMediaStreamTrack/cropTo}} as input.
         </p>
         <pre class="idl">
-          [Exposed = Window]
+          [Exposed = Window, Serializable]
           interface CropTarget {
             // Intentionally empty; just an opaque identifier.
           };
         </pre>
         <dl data-link-for="CropTarget" data-dfn-for="CropTarget"></dl>
+        <p>{{CropTarget}} objects are serializable. The [=serialization steps=],
+          given <var>value</var>, <var>serialized</var>, and a boolean <var>forStorage</var>, are:
+          <ol>
+           <li><p>If <var>forStorage</var> is <code>true</code>, throw with a new {{DOMException}}
+             object whose {{DOMException/name}} attribute has the value {{"DataCloneError"}}.</p></li>
+           <li><p>Set <var>serialized</var>.[[\CropTargetElement]] to <var>value</var>'s {{CropTarget/[[Element]]}}.</p></li>
+          </ol>
+        </p>
+        <p>The [=deserialization steps=], given <var>serialized</var> and <var>value</var> are:
+          <ol>
+           <li><p>Set <var>value</var>'s {{CropTarget/[[Element]]}} to <var>serialized</var>.[[\CropTargetElement]].</p></li>
+          </ol>
+        </p>
       </section>
       <section id="producecroptarget-method">
         <h3>MediaDevices.produceCropTarget</h3>
