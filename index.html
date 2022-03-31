@@ -147,28 +147,65 @@
           purpose is to be handed to {{BrowserCaptureMediaStreamTrack/cropTo}} as input.
         </p>
         <pre class="idl">
-          [Exposed = Window]
+          [Exposed=(Window,Worker), Serializable]
           interface CropTarget {
             // Intentionally empty; just an opaque identifier.
           };
         </pre>
+        <div class="note">
+          <p>
+            There is no consensus yet on the name for {{CropTarget}}. This is under discussion in
+            <a href="https://github.com/w3c/mediacapture-region/issues/18">issue #18</a>.
+          </p>
+        </div>
         <dl data-link-for="CropTarget" data-dfn-for="CropTarget"></dl>
         <p>
-          To <dfn data-export>create a CropTarget</dfn> with <var>element</var> as input, run the following steps:
-          <ol>
-            <li>
-              <p>Let <var>cropTarget</var> be a new object of type {{CropTarget}}.</p>
-            </li>
-            <li>
-              <p>Let <var>weakRef</var> be a weak reference to <var>element</var>.</p>
-              <p>Create <var>cropTarget</var>.<dfn data-dfn-for="CropTarget">[[\Element]]</dfn> initialized to <var>weakRef</var>.</p>
-              <div class="note">
-                <p><var>cropTarget</var> is keeping a weak reference to the element it is representing.
-                  In other words, <var>cropTarget</var> will not prevent garbage collection of its element.</p>
-              </div>
-            </li>
-          </ol>
+          To <dfn data-export>create a CropTarget</dfn> with <var>element</var> as input, run the
+          following steps:
         </p>
+        <ol>
+          <li>
+            <p>Let <var>cropTarget</var> be a new object of type {{CropTarget}}.</p>
+          </li>
+          <li>
+            <p>Let <var>weakRef</var> be a weak reference to <var>element</var>.</p>
+            <p>
+              [=Create a CropTarget|Create=] <var>cropTarget</var>.[[\Element]] initialized to
+              <var>weakRef</var>.
+            </p>
+            <div class="note">
+              <p>
+                <var>cropTarget</var> keeps a weak reference to the element it represents. In other
+                words, <var>cropTarget</var> will not prevent garbage collection of its element.
+              </p>
+            </div>
+          </li>
+        </ol>
+        <p>
+          {{CropTarget}} objects are serializable. The [=serialization steps=], given
+          <var>value</var>, <var>serialized</var>, and a boolean <var>forStorage</var>, are:
+        </p>
+        <ol>
+          <li>
+            <p>
+              If <var>forStorage</var> is <code>true</code>, throw with a new {{DOMException}}
+              object whose {{DOMException/name}} attribute has the value {{"DataCloneError"}}.
+            </p>
+          </li>
+          <li>
+            <p>
+              Set <var>serialized</var>.[[\CropTargetElement]] to <var>value</var>.[[\Element]].
+            </p>
+          </li>
+        </ol>
+        <p>The [=deserialization steps=], given <var>serialized</var> and <var>value</var> are:</p>
+        <ol>
+          <li>
+            <p>
+              Set <var>value</var>.[[\Element]] to <var>serialized</var>.[[\CropTargetElement]].
+            </p>
+          </li>
+        </ol>
       </section>
       <section id="producecroptarget-method">
         <h3>MediaDevices.produceCropTarget</h3>
@@ -184,20 +221,19 @@
           </dt>
           <dd>
             <p>
-              Calling {{MediaDevices/produceCropTarget}} on an {{HTMLElement}} of a
-              supported type associates that element with a {{CropTarget}}.
-              This {{CropTarget}} may be used as input to
-              {{BrowserCaptureMediaStreamTrack/cropTo}}. We define a
+              Calling {{MediaDevices/produceCropTarget}} on an {{HTMLElement}} of a supported type
+              associates that {{HTMLElement}} with a {{CropTarget}}. This {{CropTarget}} may be used
+              as input to {{BrowserCaptureMediaStreamTrack/cropTo}}. We define a
               <dfn>valid CropTarget</dfn> as one returned by a previous call to
               {{MediaDevices/produceCropTarget()}} in the current [=browsing context=].
             </p>
             <p>
-              When {{MediaDevices/produceCropTarget}} is called on a given <var>element</var>,
-              the user agent [=create a CropTarget|creates a CropTarget=] with <var>element</var> as input.
-              The user agent MUST return a {{Promise}} <var>P</var>. The
-              user agent MUST resolve <var>P</var> only after it has finished all the necessary
-              internal propagation of state associated with the new {{CropTarget}}, at which point
-              the user agent MUST be ready to receive the new {{CropTarget}} as a valid parameter to
+              When {{MediaDevices/produceCropTarget}} is called on a given <var>element</var>, the
+              user agent [=create a CropTarget|creates a CropTarget=] with <var>element</var> as
+              input. The user agent MUST return a {{Promise}} <var>p</var>. The user agent MUST
+              resolve <var>p</var> only after it has finished all the necessary internal propagation
+              of state associated with the new {{CropTarget}}, at which point the user agent MUST be
+              ready to receive the new {{CropTarget}} as a valid parameter to
               {{BrowserCaptureMediaStreamTrack/cropTo}}.
             </p>
             <p>
@@ -208,6 +244,27 @@
             </p>
           </dd>
         </dl>
+        <div class="note">
+          <p>There is no consensus yet on the following issues:</p>
+          <ul>
+            <li>
+              Whether {{CropTarget}} is created from {{Element}} instances or from {{HTMLElement}}
+              instances. This is under discussion in
+              <a href="https://github.com/w3c/mediacapture-region/issues/13">issue #13</a>.
+            </li>
+            <li>
+              Whether <code>produceCropTarget()</code> should be exposed on instances of
+              {{MediaDevices}} or on instances of {{HTMLElement}}/{{Element}}. This is under
+              discussion in
+              <a href="https://github.com/w3c/mediacapture-region/issues/11">issue #11</a>.
+            </li>
+            <li>
+              Whether {{MediaDevices/produceCropTarget()}} should return a {{CropTarget}} or a
+              {{Promise}}&lt;{{CropTarget}}&gt;. This is under discussion in
+              <a href="https://github.com/w3c/mediacapture-region/issues/17">issue #17</a>.
+            </li>
+          </ul>
+        </div>
       </section>
     </section>
     <section id="cropping-a-track">
@@ -244,12 +301,15 @@
           <dd>
             <p>
               Calls to this method instruct the user agent to start/stop cropping a [=self-capture
-              video track=] to the <a href="https://drafts.csswg.org/cssom-view/#dom-element-getboundingclientrect">
-              bounding client rectangle</a> of <var>cropTarget</var>.[[\Element]].
-              Since the track is restricted to the visible viewport of the [=display-surface=],
-              the captured area will be the intersection of the visible viewport and the element bounding client rectangle.
-              Whenever {{BrowserCaptureMediaStreamTrack/cropTo}} is invoked,
-              the user agent MUST execute the following algorithm:
+              video track=] to the
+              <a href="https://drafts.csswg.org/cssom-view/#dom-element-getboundingclientrect">
+                bounding client rectangle</a
+              >
+              of <var>cropTarget</var>.[[\Element]]. Since the track is restricted to the visible
+              viewport of the [=display-surface=], the captured area will be the intersection of the
+              visible viewport and the element bounding client rectangle. Whenever
+              {{BrowserCaptureMediaStreamTrack/cropTo}} is invoked, the user agent MUST execute the
+              following algorithm:
             </p>
             <ol>
               <li>
@@ -272,43 +332,64 @@
                   </li>
                 </ul>
                 <p>
-                  When the user agent does not accept <var>cropTarget</var>, it MUST return a new
-                  {{Promise}}, [=rejected=] with an {{UnknownError}}.
+                  If the user agent does not accept <var>cropTarget</var>, return a {{Promise}}
+                  [=rejected=] with an {{UnknownError}}.
                 </p>
               </li>
+              <li>Let <var>p</var> be a new {{Promise}}.</li>
               <li>
-                The user agent MUST return a new {{Promise}} <var>P</var>. The behavior of this
-                {{Promise}} is specified further below.
-              </li>
-              <li>
-                <p>
-                  The user agent MUST update [=this=] video track's [=crop-state=] according to
-                  <var>cropTarget</var>:
-                </p>
-                <ul>
+                <p>Run the following steps in parallel:</p>
+                <ol>
                   <li>
-                    If <var>cropTarget</var> is set to {{undefined}}, the user agent MUST stop
-                    cropping. [=This=] video track reverts to the [=uncropped=] state.
+                    If <var>cropTarget</var> is neither {{undefined}} nor a [=valid CropTarget=],
+                    reject <var>p</var> with a {{NotAllowedError}} and abort these steps.
                   </li>
                   <li>
-                    If <var>cropTarget</var> is a [=valid CropTarget=], the user agent MUST start
-                    cropping [=this=] video track to the contours of the element referenced by this
-                    {{CropTarget}}. This means that for each new frame produced on the track, the
-                    user agent calculates the bounding box of the pixels belonging to the element,
-                    and crops the frame to the coordinates of this bounding box.
+                    <p>
+                      If <var>cropTarget</var> is either {{undefined}} or a [=valid CropTarget=],
+                      the user agent MUST update [=this=] video track's [=crop-state=] according to
+                      <var>cropTarget</var>:
+                    </p>
+                    <ul>
+                      <li>
+                        If <var>cropTarget</var> is set to {{undefined}}, the user agent MUST stop
+                        cropping. [=This=] video track reverts to the [=uncropped=] state.
+                      </li>
+                      <li>
+                        If <var>cropTarget</var> is a [=valid CropTarget=], the user agent MUST
+                        start cropping [=this=] video track to the contours of the element
+                        referenced by this {{CropTarget}}. This means that for each new frame
+                        produced on the track, the user agent calculates the bounding box of the
+                        pixels belonging to the element, and crops the frame to the coordinates of
+                        this bounding box.
+                      </li>
+                    </ul>
                   </li>
-                </ul>
+                  <li>
+                    <p>
+                      Call the track's state before this method invocation <var>PRE-STATE</var>, and
+                      after this method invocation <var>POST-STATE</var>. The user agent MUST
+                      resolve <var>p</var> when it is guaranteed that no more frames cropped (or
+                      uncropped) according to <var>PRE-STATE</var> have been delivered to the
+                      application, and that any additional frames delivered to the application will
+                      therefore be cropped (or uncropped) according to either
+                      <var>POST-STATE</var> or a later state.
+                    </p>
+                    <div class="note">
+                      <p>
+                        The timing of the cropTo promise resolution and the timing of the actual
+                        cropping of video frames is observable to JavaScript through
+                        <a href="https://w3c.github.io/mediacapture-transform/">
+                          MediaStreamTrack transforms</a
+                        >. It is expected that the first newly cropped video frame will be enqueued
+                        on the MediaStreamTrack ReadableStream just after the cropTo promise is
+                        resolved.
+                      </p>
+                    </div>
+                  </li>
+                </ol>
               </li>
-              <li>
-                <p>
-                  Call the track's state before this method invocation <var>PRE-STATE</var>, and
-                  after this method invocation <var>POST-STATE</var>. The user agent MUST resolve
-                  <var>P</var> when it is guaranteed that no more frames cropped (or uncropped)
-                  according to <var>PRE-STATE</var> have been delivered to the application, and that
-                  any additional frames delivered to the application will therefore be cropped (or
-                  uncropped) according to either <var>POST-STATE</var> or a later state.
-                </p>
-              </li>
+              <li>Return <var>p</var>.</li>
             </ol>
           </dd>
           <dt>
