@@ -152,13 +152,35 @@
             // Intentionally empty; just an opaque identifier.
           };
         </pre>
-        <dl data-link-for="CropTarget" data-dfn-for="CropTarget"></dl>
         <div class="note">
           <p>
             There is no consensus yet on the name for {{CropTarget}}. This is under discussion in
             <a href="https://github.com/w3c/mediacapture-region/issues/18">issue #18</a>.
           </p>
         </div>
+        <dl data-link-for="CropTarget" data-dfn-for="CropTarget"></dl>
+        <p>
+          To <dfn data-export>create a CropTarget</dfn> with <var>element</var> as input, run the
+          following steps:
+        </p>
+        <ol>
+          <li>
+            <p>Let <var>cropTarget</var> be a new object of type {{CropTarget}}.</p>
+          </li>
+          <li>
+            <p>Let <var>weakRef</var> be a weak reference to <var>element</var>.</p>
+            <p>
+              [=Create a CropTarget|Create=] <var>cropTarget</var>.[[\Element]] initialized to
+              <var>weakRef</var>.
+            </p>
+            <div class="note">
+              <p>
+                <var>cropTarget</var> keeps a weak reference to the element it represents. In other
+                words, <var>cropTarget</var> will not prevent garbage collection of its element.
+              </p>
+            </div>
+          </li>
+        </ol>
         <p>
           {{CropTarget}} objects are serializable. The [=serialization steps=], given
           <var>value</var>, <var>serialized</var>, and a boolean <var>forStorage</var>, are:
@@ -199,36 +221,26 @@
           </dt>
           <dd>
             <p>
-              The first call of {{MediaDevices/produceCropTarget}} on an {{HTMLElement}} of a
-              supported type, permanently associates that element with a {{CropTarget}}. Subsequent
-              calls return the same {{CropTarget}}. This {{CropTarget}} may be used as input to
+              Calling {{MediaDevices/produceCropTarget}} on an {{HTMLElement}} of a supported type
+              associates that {{HTMLElement}} with a {{CropTarget}}. This {{CropTarget}} may be used
+              as input to {{BrowserCaptureMediaStreamTrack/cropTo}}. We define a
+              <dfn>valid CropTarget</dfn> as one returned by a previous call to
+              {{MediaDevices/produceCropTarget()}} in the current [=browsing context=].
+            </p>
+            <p>
+              When {{MediaDevices/produceCropTarget}} is called on a given <var>element</var>, the
+              user agent [=create a CropTarget|creates a CropTarget=] with <var>element</var> as
+              input. The user agent MUST return a {{Promise}} <var>p</var>. The user agent MUST
+              resolve <var>p</var> only after it has finished all the necessary internal propagation
+              of state associated with the new {{CropTarget}}, at which point the user agent MUST be
+              ready to receive the new {{CropTarget}} as a valid parameter to
               {{BrowserCaptureMediaStreamTrack/cropTo}}.
-            </p>
-            <p>
-              We define a <dfn>valid CropTarget</dfn> as one returned by a previous call to
-              {{MediaDevices/produceCropTarget()}} in the current top-level document [=browsing
-              context=] or in one of its descendant [=browsing context=].
-            </p>
-            <p>
-              When {{MediaDevices/produceCropTarget}} is first called on a given <var>element</var>,
-              the user agent MUST produce a new unique {{CropTarget}} and permanently associate it
-              with <var>element</var>. The user agent MUST return a {{Promise}} <var>p</var>. The
-              user agent MUST resolve <var>p</var> only after it has finished all the necessary
-              internal propagation of state associated with the new {{CropTarget}}, at which point
-              the user agent MUST be ready to receive the new {{CropTarget}} as a valid parameter to
-              {{BrowserCaptureMediaStreamTrack/cropTo}}.
-            </p>
-            <p>
-              Subsequent calls to {{MediaDevices/produceCropTarget}} MUST return a new {{Promise}}
-              that behaves the same way <var>p</var> does. Specifically, the new {{Promise}} MUST
-              resolve after <var>p</var>, and MUST resolve to the same {{CropTarget}} as
-              <var>p</var>.
             </p>
             <p>
               When cloning an {{HTMLElement}} on which {{MediaDevices/produceCropTarget}} was
-              previously called, the clone MUST NOT be associated with any {{CropTarget}}. If
+              previously called, the clone is not associated with any {{CropTarget}}. If
               {{MediaDevices/produceCropTarget}} is later called on the clone, a new {{CropTarget}}
-              MUST be assigned to it.
+              will be assigned to it.
             </p>
           </dd>
         </dl>
@@ -289,9 +301,15 @@
           <dd>
             <p>
               Calls to this method instruct the user agent to start/stop cropping a [=self-capture
-              video track=] to the contours of the element referenced by
-              <var>cropTarget</var>. Whenever {{BrowserCaptureMediaStreamTrack/cropTo}} is invoked,
-              the user agent MUST execute the following algorithm:
+              video track=] to the
+              <a href="https://drafts.csswg.org/cssom-view/#dom-element-getboundingclientrect">
+                bounding client rectangle</a
+              >
+              of <var>cropTarget</var>.[[\Element]]. Since the track is restricted to the visible
+              viewport of the [=display-surface=], the captured area will be the intersection of the
+              visible viewport and the element bounding client rectangle. Whenever
+              {{BrowserCaptureMediaStreamTrack/cropTo}} is invoked, the user agent MUST execute the
+              following algorithm:
             </p>
             <ol>
               <li>
