@@ -147,7 +147,7 @@
           purpose is to be handed to {{BrowserCaptureMediaStreamTrack/cropTo}} as input.
         </p>
         <pre class="idl">
-          [Exposed=(Window,Worker)]
+          [Exposed=(Window,Worker), Serializable]
           interface CropTarget {
             // Intentionally empty; just an opaque identifier.
           };
@@ -159,6 +159,31 @@
             <a href="https://github.com/w3c/mediacapture-region/issues/18">issue #18</a>.
           </p>
         </div>
+        <p>
+          {{CropTarget}} objects are serializable. The [=serialization steps=], given
+          <var>value</var>, <var>serialized</var>, and a boolean <var>forStorage</var>, are:
+        </p>
+        <ol>
+          <li>
+            <p>
+              If <var>forStorage</var> is <code>true</code>, throw with a new {{DOMException}}
+              object whose {{DOMException/name}} attribute has the value {{"DataCloneError"}}.
+            </p>
+          </li>
+          <li>
+            <p>
+              Set <var>serialized</var>.[[\CropTargetElement]] to <var>value</var>.[[\Element]].
+            </p>
+          </li>
+        </ol>
+        <p>The [=deserialization steps=], given <var>serialized</var> and <var>value</var> are:</p>
+        <ol>
+          <li>
+            <p>
+              Set <var>value</var>.[[\Element]] to <var>serialized</var>.[[\CropTargetElement]].
+            </p>
+          </li>
+        </ol>
       </section>
       <section id="producecroptarget-method">
         <h3>MediaDevices.produceCropTarget</h3>
