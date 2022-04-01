@@ -11,7 +11,9 @@
       <h2>Abstract</h2>
       <p>
         This document introduces an API for cropping a video track derived from display-capture of
-        the current [=browsing context=].
+        the current [=top-level browsing context=] or any of its
+        <a data-cite="HTML#list-of-the-descendant-browsing-contexts">descendant browsing contexts</a
+        >.
       </p>
     </section>
     <section id="sotd">
@@ -28,9 +30,10 @@
       <p>
         Recall that when {{MediaDevices/getDisplayMedia()}} is called and the user chooses to share
         some [=display-surface=], exactly one video track is produced. If the user chooses to
-        capture a [=browser=] [=display-surface=] associated with the [=browsing context=] from
-        which {{MediaDevices/getDisplayMedia()}} was called, we define the resulting capture session
-        as <dfn>self-capture</dfn>, and this video track a <dfn>self-capture video track</dfn>.
+        capture a [=browser=] [=display-surface=] associated with the [=top-level browsing context=]
+        from which {{MediaDevices/getDisplayMedia()}} was called, we define the resulting capture
+        session as <dfn>self-capture</dfn>, and this video track a
+        <dfn>self-capture video track</dfn>.
       </p>
     </section>
     <section id="use-cases">
@@ -52,13 +55,13 @@
         <h3>Practical Use-Case</h3>
         <p>
           Consider a combo-application consisting of two major parts - a video-conferencing
-          application and a productivity-suite application co-existing in a [=browsing context=].
-          Assume the video-conferencing uses existing/upcoming APIs such as
+          application and a productivity-suite application co-existing in a shared [=top-level
+          browsing context=]. Assume the video-conferencing uses existing/upcoming APIs such as
           {{MediaDevices/getDisplayMedia()}} and/or <code>getViewportMedia</code> and captures the
-          entire [=browsing context=]. Now it needs to crop away everything other than a particular
-          section of the productivity-suite. It needs to crop away its own video-conferencing
-          content, any speaker notes and other private and/or irrelevant content in the
-          productivity-suite, before transmitting the resulting cropped video remotely.
+          entire [=top-level browsing context=]. Now it needs to crop away everything other than a
+          particular section of the productivity-suite. It needs to crop away its own
+          video-conferencing content, any speaker notes and other private and/or irrelevant content
+          in the productivity-suite, before transmitting the resulting cropped video remotely.
         </p>
         <p>
           Moreover, consider that it is likely that the two collaborating applications are
@@ -91,11 +94,11 @@
       <p>
         As presently defined, {{BrowserCaptureMediaStreamTrack/cropTo}}(<var>ID</var>) returns a
         [=rejected=] {{Promise}} if the <var>ID</var> is not associated with an {{Element}} within
-        the current [=browsing context=]. That means that all of the mechanisms introduced by this
-        document are only relevant for [=self-capture=]. An immediate corollary is that, since both
-        the capturing as well as captured documents live within the same [=browsing context=],
-        navigation of their (shared) top-level document would break off the capture, and therefore
-        also the cropping session.
+        the current [=top-level browsing context=] or any of its
+        <a data-cite="HTML#list-of-the-descendant-browsing-contexts">descendant browsing contexts</a
+        >. That means that all of the mechanisms introduced by this document are only relevant for
+        [=self-capture=]. An immediate corollary is that navigation of the (shared) [=top-level
+        browsing context=] breaks off the capture, and therefore also the cropping session.
       </p>
     </section>
     <section id="solution-overview">
@@ -225,7 +228,11 @@
               associates that {{Element}} with a {{CropTarget}}. This {{CropTarget}} may be used as
               input to {{BrowserCaptureMediaStreamTrack/cropTo}}. We define a
               <dfn>valid CropTarget</dfn> as one returned by a previous call to
-              {{MediaDevices/produceCropTarget()}} in the current [=browsing context=].
+              {{MediaDevices/produceCropTarget()}} in the current [=top-level browsing context=] or
+              any of its
+              <a data-cite="HTML#list-of-the-descendant-browsing-contexts"
+                >descendant browsing contexts</a
+              >.
             </p>
             <p>
               When {{MediaDevices/produceCropTarget}} is called on a given <var>element</var>, the
@@ -412,9 +419,9 @@
           </p>
           <p>
             Consider a frame produced on a [=cropped=] video track. The user agent calculates the
-            intersection of (i) the [=browsing context=]'s viewport and (ii) the bounding box of all
-            pixels belonging to the [=crop-session target=]. This intersection is defined as the
-            crop-session target's coordinates for that frame.
+            intersection of (i) the [=top-level browsing context=]'s viewport and (ii) the bounding
+            box of all pixels belonging to the [=crop-session target=]. This intersection is defined
+            as the crop-session target's coordinates for that frame.
           </p>
         </section>
         <section id="crop-session-edge-cases">
@@ -429,7 +436,7 @@
             <p>
               We define as an <dfn>empty crop-session target</dfn> the case where a [=crop-session
               target=] is attached to the DOM, yet consists of zero pixels which are drawn inside of
-              the [=browsing context|browsing context's=] viewport.
+              the [=top-level browsing context|browsing context's=] viewport.
             </p>
             <div class="note">
               <p>Some examples of when this could happen include:</p>
@@ -482,7 +489,7 @@
           sendCropTarget(cropTarget);
 
           function sendCropTarget(cropTarget) {
-            // Can send the crop-target to another document in this browsing context
+            // Can send the crop-target to another document in this tab
             // using postMessage() or using any other means.
             // Possibly there is no other document, and this is just consumed locally.
           }
