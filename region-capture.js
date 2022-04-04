@@ -14,6 +14,5 @@ var respecConfig = {
     },
   ],
   xref: ["html", "infra", "permissions", "permissions-policy", "dom", "mediacapture-streams", "webidl", "screen-capture"],
-  latestVersion: null,
   subjectPrefix: "[region-capture]",
 };
