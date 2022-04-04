@@ -26,12 +26,13 @@
         <dfn>display-surface</dfn> and <dfn>browser</dfn> [=display-surface=].
       </p>
       <p>
-        Recall that when {{MediaDevices/getDisplayMedia()}} is called and the user chooses to share
-        some [=display-surface=], exactly one video track is produced. If the user chooses to
-        capture a [=browser=] [=display-surface=] associated with the [=top-level browsing context=]
-        from which {{MediaDevices/getDisplayMedia()}} was called, we define the resulting capture
-        session as <dfn>self-capture</dfn>, and this video track a
-        <dfn>self-capture video track</dfn>.
+        Let <var>MD</var> be a {{MediaDevices}} object. Let <var>AD</var> be the [=associated
+        Document=] of <var>MD</var>'s [=relevant global object=]. Let <var>TLBC</var> be
+        <var>AD</var>'s [=top-level browsing context=]. Assume
+        <var>MD</var>.{{MediaDevices/getDisplayMedia()}} is called. If the user chooses to capture a
+        [=browser=] [=display-surface=] associated with <var>TLBC</var>, we define the resulting
+        capture session as <dfn>self-capture</dfn>. The call results in exactly one video track,
+        which we define to be a <dfn>self-capture video track</dfn>.
       </p>
     </section>
     <section class="informative" id="use-cases">
