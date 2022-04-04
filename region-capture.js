@@ -1,6 +1,6 @@
 var respecConfig = {
   group: "webrtc",
-  specStatus: "FPWD",
+  specStatus: "ED",
   github: {
     repoURL: "https://github.com/w3c/mediacapture-region/",
     branch: "main",
