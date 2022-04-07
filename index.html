@@ -26,13 +26,12 @@
         <dfn>display-surface</dfn> and <dfn>browser</dfn> [=display-surface=].
       </p>
       <p>
-        Let <var>MD</var> be a {{MediaDevices}} object. Let <var>AD</var> be the [=associated
-        Document=] of <var>MD</var>'s [=relevant global object=]. Let <var>TLBC</var> be
-        <var>AD</var>'s [=top-level browsing context=]. Assume
-        <var>MD</var>.{{MediaDevices/getDisplayMedia()}} is called. If the user chooses to capture a
-        [=browser=] [=display-surface=] associated with <var>TLBC</var>, we define the resulting
-        capture session as <dfn>self-capture</dfn>. The call results in exactly one video track,
-        which we define to be a <dfn>self-capture video track</dfn>.
+        This specification defines <dfn>self-capture</dfn> as the capture of a
+        [=browser=] [=display-surface=] that is the rendered form of the
+        [=top-level browsing context=] of the [=associated Document=] of the
+        {{MediaDevices}} object from which the application initiated the
+        capture session. A <dfn>self-capture video track</dfn> is a
+        {{MediaStreamTrack}} sourced by <a>self-capture</a>.
       </p>
     </section>
     <section class="informative" id="use-cases">
