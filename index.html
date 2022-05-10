@@ -88,8 +88,8 @@
     <section id="scope">
       <h2>Scope</h2>
       <p>
-        As presently defined, {{BrowserCaptureMediaStreamTrack/cropTo}}(<var>ID</var>) returns a
-        [=rejected=] {{Promise}} if the <var>ID</var> is not associated with an {{Element}} within
+        As presently defined, {{BrowserCaptureMediaStreamTrack/cropTo}}(<var>cropTarget</var>) returns a
+        [=rejected=] {{Promise}} if the <var>cropTarget</var> is not associated with an {{Element}} within
         either the current [=top-level browsing context=] or any of its
         <a data-cite="HTML#list-of-the-descendant-browsing-contexts">descendant browsing contexts</a
         >. That means that all of the mechanisms introduced by this document are only relevant for
