@@ -85,7 +85,7 @@
         </p>
       </section>
     </section>
-    <section id="scope">
+    <section id="scope" class="informative">
       <h2>Scope</h2>
       <p>
         As presently defined, {{BrowserCaptureMediaStreamTrack/cropTo}}(<var>cropTarget</var>) returns a
@@ -97,7 +97,7 @@
         browsing context=] breaks off the capture, and therefore also the cropping session.
       </p>
     </section>
-    <section id="solution-overview">
+    <section id="solution-overview" class="informative">
       <h2>Solution Overview</h2>
       <p>The region-capture mechanism comprises two parts:</p>
       <ol>
@@ -119,7 +119,7 @@
     </section>
     <section id="produce-crop-target">
       <h2><dfn>CropTarget Production</dfn></h2>
-      <section id="crop-target-motivation">
+      <section id="crop-target-motivation" class="informative">
         <h3>CropTarget Motivation</h3>
         <p>
           The [=cropping mechanism=] presented in this document
@@ -151,10 +151,9 @@
             // Intentionally empty; just an opaque identifier.
           };
         </pre>
-        <div class="note">
+        <div class="issue" data-number="18">
           <p>
-            There is no consensus yet on the name for {{CropTarget}}. This is under discussion in
-            <a href="https://github.com/w3c/mediacapture-region/issues/18">issue #18</a>.
+            There is no consensus yet on the name for {{CropTarget}}.
           </p>
         </div>
         <dl data-link-for="CropTarget" data-dfn-for="CropTarget"></dl>
@@ -166,12 +165,9 @@
           <li>
             <p>Let <var>cropTarget</var> be a new object of type {{CropTarget}}.</p>
           </li>
+          <li> <p>Let <var>weakRef</var> be a weak reference to <var>element</var>.</p></li>
           <li>
-            <p>Let <var>weakRef</var> be a weak reference to <var>element</var>.</p>
-            <p>
-              [=Create a CropTarget|Create=] <var>cropTarget</var>.[[\Element]] initialized to
-              <var>weakRef</var>.
-            </p>
+            <p> Set <var>cropTarget</var>.[[\Element]] to <var>weakRef</var>. </p>
             <div class="note">
               <p>
                 <var>cropTarget</var> keeps a weak reference to the element it represents. In other
@@ -179,7 +175,33 @@
               </p>
             </div>
           </li>
+          <li>
+            <p>Set |cropTarget|.[[\top-level browsing context]] to [=this=]'s [=browsing context=]'s
+             [=top-level browsing context=].</p>
+          </li>
+          <li>
+            <p>Let |promise| be [=a new promise=].</p>
+          </li>
+          <li>
+            <p>Run the following steps in parallel:</p>
+            <ol>
+              <li><p>In an [=implementation-defined=] way, propagate state associated with |cropTarget|.</p></li>
+              <li>
+                <p>if state propagation was successful, [=resolve=] |promise|.Otherwise, [=reject=] |promise|.</p>
+                <p class="note">
+                  The user agent needes to [=resolve=] or [=reject=] |promise| only after it has finished all
+                  the necessary internal propagation of state associated with the new {{CropTarget}}, at
+                  which point the user agent it is ready to receive the new {{CropTarget}} as a valid
+                  parameter to {{BrowserCaptureMediaStreamTrack/cropTo}}.
+                </p>
+              </li>
+            </ol>
+          </li>
+          <li>
+            <p>Return |promise|.<p>
+          </li>
         </ol>
+
         <p>
           {{CropTarget}} objects are serializable. The [=serialization steps=], given
           <var>value</var>, <var>serialized</var>, and a boolean <var>forStorage</var>, are:
@@ -205,6 +227,14 @@
             </p>
           </li>
         </ol>
+
+        <p> To <dfn>determine if crop target is valid</dfn>, given {{cropTarget}} |target| as input, run the following
+            steps:</p>
+          <ol>
+            <li><p>If |target|'s [[\top-level browsing context]] equals [=this=]'s [=browsing context=]'s [=top-level browsing context=], return true</p></li>
+            <li><p>Otherwise, return false</p></li>
+          </ol>
+
       </section>
       <section id="producecroptarget-method">
         <h3>MediaDevices.produceCropTarget</h3>
@@ -219,27 +249,16 @@
             <dfn>produceCropTarget()</dfn>
           </dt>
           <dd>
-            <p>
+            <p class="note">
               Calling {{MediaDevices/produceCropTarget}} on an {{Element}} of a supported type
               associates that {{Element}} with a {{CropTarget}}. This {{CropTarget}} may be used as
-              input to {{BrowserCaptureMediaStreamTrack/cropTo}}. We define a
-              <dfn>valid CropTarget</dfn> as one returned by a previous call to
-              {{MediaDevices/produceCropTarget()}} in the current [=top-level browsing context=] or
-              any of its
-              <a data-cite="HTML#list-of-the-descendant-browsing-contexts"
-                >descendant browsing contexts</a
-              >.
+              input to {{BrowserCaptureMediaStreamTrack/cropTo}}.
             </p>
             <p>
               When {{MediaDevices/produceCropTarget}} is called on a given <var>element</var>, the
               user agent [=create a CropTarget|creates a CropTarget=] with <var>element</var> as
-              input. The user agent MUST return a {{Promise}} <var>p</var>. The user agent MUST
-              resolve <var>p</var> only after it has finished all the necessary internal propagation
-              of state associated with the new {{CropTarget}}, at which point the user agent MUST be
-              ready to receive the new {{CropTarget}} as a valid parameter to
-              {{BrowserCaptureMediaStreamTrack/cropTo}}.
-            </p>
-            <p>
+              input and returns the result.           </p>
+            <p class="note">
               When cloning an {{Element}} on which {{MediaDevices/produceCropTarget}} was previously
               called, the clone is not associated with any {{CropTarget}}. If
               {{MediaDevices/produceCropTarget}} is later called on the clone, a new {{CropTarget}}
@@ -247,20 +266,15 @@
             </p>
           </dd>
         </dl>
-        <div class="note">
-          <p>There is no consensus yet on the following issues:</p>
-          <ul>
-            <li>
-              Whether <code>produceCropTarget()</code> should be exposed on instances of
-              {{MediaDevices}} or on instances of {{Element}}. This is under discussion in
-              <a href="https://github.com/w3c/mediacapture-region/issues/11">issue #11</a>.
-            </li>
-            <li>
-              Whether {{MediaDevices/produceCropTarget()}} should return a {{CropTarget}} or a
-              {{Promise}}&lt;{{CropTarget}}&gt;. This is under discussion in
-              <a href="https://github.com/w3c/mediacapture-region/issues/17">issue #17</a>.
-            </li>
-          </ul>
+        <div class="issue" data-number="11">
+          <p>There is no consensus whether <code>produceCropTarget()</code> should be exposed on instances of
+              {{MediaDevices}} or on instances of {{Element}}.
+          </p>
+        </div>
+        <div class="issue" data-number="17">
+          <p>There is no consensus whether {{MediaDevices/produceCropTarget()}} should return a {{CropTarget}} or a
+              {{Promise}}&lt;{{CropTarget}}&gt;.
+          </p>
         </div>
       </section>
     </section>
@@ -320,17 +334,20 @@
                 </p>
                 <ul>
                   <li>
-                    If [=this=] track is [=uncropped=], the user agent MUST only accept [=valid
-                    CropTargets=].
+                    Let |valid| be the result of running [=determine if crop target is valid=] on |cropTarget|.
                   </li>
                   <li>
-                    If [=this=] track is [=cropped=], the user agent MUST accept either [=valid
-                    CropTargets=] or {{undefined}}.
+                    Let |success| be a [=boolean=], initially set to false.
+                  </li>
+                  <li>
+                    If [=this=] track is [=uncropped=] and |valid| is true, set |success| to true.
+                  </li>
+                  <li>
+                    If [=this=] track is [=cropped=], |cropTarget| is either {{undefined}} or |valid| is true, set |success| to true.
                   </li>
                 </ul>
                 <p>
-                  If the user agent does not accept <var>cropTarget</var>, return a {{Promise}}
-                  [=rejected=] with an {{UnknownError}}.
+                  If |success| is false, return a {{Promise}} [=rejected=] with an {{UnknownError}}.
                 </p>
               </li>
               <li>Let <var>p</var> be a new {{Promise}}.</li>
@@ -338,14 +355,15 @@
                 <p>Run the following steps in parallel:</p>
                 <ol>
                   <li>
-                    If <var>cropTarget</var> is neither {{undefined}} nor a [=valid CropTarget=],
-                    reject <var>p</var> with a {{NotAllowedError}} and abort these steps.
+                    If <var>cropTarget</var> is neither {{undefined}} or if calling [=determine if
+                    crop target is valid=] return false, reject <var>p</var> with a
+                   {{NotAllowedError}} and abort these steps.
                   </li>
                   <li>
                     <p>
-                      If <var>cropTarget</var> is either {{undefined}} or a [=valid CropTarget=],
-                      the user agent MUST update [=this=] video track's [=crop-state=] according to
-                      <var>cropTarget</var>:
+                      If <var>cropTarget</var> is either {{undefined}} or if calling [=determine if
+                      crop target is valid=] return false, the user agent MUST update [=this=] video
+                      track's [=crop-state=] according to <var>cropTarget</var>:
                     </p>
                     <ul>
                       <li>
@@ -353,8 +371,8 @@
                         cropping. [=This=] video track reverts to the [=uncropped=] state.
                       </li>
                       <li>
-                        If <var>cropTarget</var> is a [=valid CropTarget=], the user agent MUST
-                        start cropping [=this=] video track to the contours of the element
+                        If calling [=determine if crop target is valid=] returns true, the user
+                        agent MUST start cropping [=this=] video track to the contours of the element
                         referenced by this {{CropTarget}}. This means that for each new frame
                         produced on the track, the user agent calculates the bounding box of the
                         pixels belonging to the element, and crops the frame to the coordinates of
