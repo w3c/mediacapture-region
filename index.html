@@ -228,7 +228,7 @@
           </li>
         </ol>
 
-        <p> To <dfn>determine if crop target is valid</dfn>, given {{cropTarget}} |target| as input, run the following
+        <p> When asked to run <dfn>is crop target valid input</dfn>, given {{cropTarget}} |target| as input, run the following
             steps:</p>
           <ol>
             <li>
@@ -329,49 +329,38 @@
               following algorithm:
             </p>
             <ol>
-              <li>
-                If [=this=] is not a [=self-capture video track=], the user agent MUST return a new
-                {{Promise}}, [=rejected=] with an {{NotSupportedError}}.
-              </li>
-              <li>
-                <p>
-                  The user agent MUST validate <var>cropTarget</var> according to [=this=] track's
-                  current [=crop-state=].
-                </p>
-                <ul>
-                  <li>
-                    Let |valid| be the result of running [=determine if crop target is valid=] on
-                    |cropTarget|.
-                  </li>
-                  <li>
-                    Let |success| be a [=boolean=], initially set to false.
-                  </li>
-                  <li>
-                    If [=this=] track is [=uncropped=] and |valid| is true, set |success| to true.
-                  </li>
-                  <li>
-                    If [=this=] track is [=cropped=], |cropTarget| is either {{undefined}} or |valid|
-                    is true, set |success| to true.
-                  </li>
-                </ul>
-                <p>
-                  If |success| is false, return a {{Promise}} [=rejected=] with an {{UnknownError}}.
-                </p>
-              </li>
               <li>Let <var>p</var> be a new {{Promise}}.</li>
+              <li>
+                If [=this=] is not a [=self-capture video track=], return |p|, [=rejected=] with an
+                {{NotSupportedError}}.
+              </li>
+              <li>
+                Let |valid| be the result of running [=is crop target valid input=] on
+                |cropTarget|.
+              </li>
+              <li>
+                Let |success| be a [=boolean=], initially set to false.
+              </li>
+              <li>
+                If [=this=]'s track is [=uncropped=] and |valid| is true, set |success| to true.
+              </li>
+              <li>
+                If [=this=]'s track is [=cropped=], and |cropTarget| is either {{undefined}} or |valid|
+                is true, set |success| to true.
+              </li>
+              <li>
+                  If |success| is false, return |p| [=rejected=] with an {{UnknownError}}.
+              </li>
               <li>
                 <p>Run the following steps in parallel:</p>
                 <ol>
                   <li>
-                    If <var>cropTarget</var> is neither {{undefined}} or if calling [=determine if
-                    crop target is valid=] return false, reject <var>p</var> with a
-                   {{NotAllowedError}} and abort these steps.
-                  </li>
-                  <li>
                     <p>
-                      If <var>cropTarget</var> is either {{undefined}} or if calling [=determine if
-                      crop target is valid=] return false, the user agent MUST update [=this=] video
-                      track's [=crop-state=] according to <var>cropTarget</var>:
+                      [=Assert=]: <var>cropTarget</var> is either {{undefined}} or calling [=is crop
+                      target valid input=] returns false.
+                    </p>
+                    <p>
+                      Update [=this=] video track's [=crop-state=] according to <var>cropTarget</var>:
                     </p>
                     <ul>
                       <li>
@@ -379,9 +368,8 @@
                         cropping. [=This=] video track reverts to the [=uncropped=] state.
                       </li>
                       <li>
-                        If calling [=determine if crop target is valid=] returns true, the user
-                        agent MUST start cropping [=this=] video track to the contours of the element
-                        referenced by this {{CropTarget}}. This means that for each new frame
+                        Otherwise, the user agent MUST start cropping [=this=] video track to the
+                        contours of the element referenced by this {{CropTarget}}. This means that for each new frame
                         produced on the track, the user agent calculates the bounding box of the
                         pixels belonging to the element, and crops the frame to the coordinates of
                         this bounding box.
