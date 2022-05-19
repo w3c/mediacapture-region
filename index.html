@@ -187,18 +187,18 @@
             <ol>
               <li><p>In an [=implementation-defined=] way, propagate state associated with |cropTarget|.</p></li>
               <li>
-                <p>if state propagation was successful, [=resolve=] |promise|.Otherwise, [=reject=] |promise|.</p>
+                <p>If state propagation was successful, [=resolve=] |promise|. Otherwise, [=reject=] |promise|.</p>
                 <p class="note">
-                  The user agent needes to [=resolve=] or [=reject=] |promise| only after it has finished all
+                  The user agent needs to [=resolve=] or [=reject=] |promise| only after it has finished all
                   the necessary internal propagation of state associated with the new {{CropTarget}}, at
-                  which point the user agent it is ready to receive the new {{CropTarget}} as a valid
+                  which point the user agent it is ready to receive the |cropTarget| as a valid
                   parameter to {{BrowserCaptureMediaStreamTrack/cropTo}}.
                 </p>
               </li>
             </ol>
           </li>
           <li>
-            <p>Return |promise|.<p>
+            <p>Return |promise|.</p>
           </li>
         </ol>
 
@@ -231,8 +231,13 @@
         <p> To <dfn>determine if crop target is valid</dfn>, given {{cropTarget}} |target| as input, run the following
             steps:</p>
           <ol>
-            <li><p>If |target|'s [[\top-level browsing context]] equals [=this=]'s [=browsing context=]'s [=top-level browsing context=], return true</p></li>
-            <li><p>Otherwise, return false</p></li>
+            <li>
+              <p>
+                If |target|'s [[\top-level browsing context]] equals [=this=]'s [=browsing context=]'s
+                [=top-level browsing context=], return true.
+              </p>
+            </li>
+            <li><p>Otherwise, return false.</p></li>
           </ol>
 
       </section>
@@ -257,7 +262,8 @@
             <p>
               When {{MediaDevices/produceCropTarget}} is called on a given <var>element</var>, the
               user agent [=create a CropTarget|creates a CropTarget=] with <var>element</var> as
-              input and returns the result.           </p>
+              input and returns the result.
+            </p>
             <p class="note">
               When cloning an {{Element}} on which {{MediaDevices/produceCropTarget}} was previously
               called, the clone is not associated with any {{CropTarget}}. If
@@ -334,7 +340,8 @@
                 </p>
                 <ul>
                   <li>
-                    Let |valid| be the result of running [=determine if crop target is valid=] on |cropTarget|.
+                    Let |valid| be the result of running [=determine if crop target is valid=] on
+                    |cropTarget|.
                   </li>
                   <li>
                     Let |success| be a [=boolean=], initially set to false.
@@ -343,7 +350,8 @@
                     If [=this=] track is [=uncropped=] and |valid| is true, set |success| to true.
                   </li>
                   <li>
-                    If [=this=] track is [=cropped=], |cropTarget| is either {{undefined}} or |valid| is true, set |success| to true.
+                    If [=this=] track is [=cropped=], |cropTarget| is either {{undefined}} or |valid|
+                    is true, set |success| to true.
                   </li>
                 </ul>
                 <p>
