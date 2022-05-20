@@ -15,7 +15,10 @@
       </p>
     </section>
     <section id="sotd">
-      This First Public Working Draft represents the direction the Web Real-Time Communications Working Group intends to explore to solve the use case of partial capture of browsing contexts. The Working Group is particularly interested in feedback on how well this direction matches the said use case from potential adopters of the API.
+      This First Public Working Draft represents the direction the Web Real-Time Communications
+      Working Group intends to explore to solve the use case of partial capture of browsing
+      contexts. The Working Group is particularly interested in feedback on how well this direction
+      matches the said use case from potential adopters of the API.
     </section>
     <section id="conformance"></section>
     <section id="definitions">
@@ -88,9 +91,9 @@
     <section id="scope">
       <h2>Scope</h2>
       <p>
-        As presently defined, {{BrowserCaptureMediaStreamTrack/cropTo}}(<var>cropTarget</var>) returns a
-        [=rejected=] {{Promise}} if the <var>cropTarget</var> is not associated with an {{Element}} within
-        either the current [=top-level browsing context=] or any of its
+        As presently defined, {{BrowserCaptureMediaStreamTrack/cropTo}}(<var>cropTarget</var>)
+        returns a [=rejected=] {{Promise}} if the <var>cropTarget</var> is not associated with an
+        {{Element}} within either the current [=top-level browsing context=] or any of its
         <a data-cite="HTML#list-of-the-descendant-browsing-contexts">descendant browsing contexts</a
         >. That means that all of the mechanisms introduced by this document are only relevant for
         [=self-capture=]. An immediate corollary is that navigation of the (shared) [=top-level
