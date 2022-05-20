@@ -151,7 +151,7 @@
         <pre class="idl">
           [Exposed=(Window,Worker), Serializable]
           interface CropTarget {
-            // Intentionally empty; just an opaque identifier.
+            Promise&lt;CropTarget&gt; produceCropTarget(Element element);
           };
         </pre>
         <div class="note">
