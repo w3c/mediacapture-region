@@ -166,7 +166,7 @@
           </dt>
           <dd>
             <p>
-              Calling {{CropTarget/fromElement}} on an {{Element}} of a supported type associates
+              Calling {{CropTarget/fromElement}} with an {{Element}} of a supported type associates
               that {{Element}} with a {{CropTarget}}. This {{CropTarget}} may be used as input to
               {{BrowserCaptureMediaStreamTrack/cropTo}}. We define a
               <dfn>valid CropTarget</dfn> as one returned by a previous call to
@@ -177,7 +177,7 @@
               >.
             </p>
             <p>
-              When {{CropTarget/fromElement}} is called on a given <var>element</var>, the user
+              When {{CropTarget/fromElement}} is called with a given <var>element</var>, the user
               agent [=create a CropTarget|creates a CropTarget=] with <var>element</var> as input.
               The user agent MUST return a {{Promise}} <var>p</var>. The user agent MUST resolve
               <var>p</var> only after it has finished all the necessary internal propagation of
@@ -192,9 +192,10 @@
             </p>
             <div class="note">
               <p>
-                There is no consensus yet on the following issue: Whether
-                {{CropTarget.fromElement()}} should return a {{CropTarget}} or a
-                {{Promise}}&lt;{{CropTarget}}&gt;. This is under discussion in
+                There is no consensus yet on the following issue: Whether producing a {{CropTarget}}
+                should be done by invoking an asynchronous method like {{CropTarget.fromElement()}},
+                or whether the to use a synchronous constructor that accepts an {{Element}} as
+                input. This is further discussed on
                 <a href="https://github.com/w3c/mediacapture-region/issues/17">issue #17</a>.
               </p>
             </div>
