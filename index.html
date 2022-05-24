@@ -467,7 +467,7 @@
         <p>Code in the capture-target:</p>
         <pre class="javascript">
           const mainContentArea = navigator.getElementById('mainContentArea');
-          const cropTarget = await navigator.mediaDevices.produceCropTarget(mainContentArea);
+          const cropTarget = await CropTarget.fromElement(mainContentArea);
           sendCropTarget(cropTarget);
 
           function sendCropTarget(cropTarget) {
