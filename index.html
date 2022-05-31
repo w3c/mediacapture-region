@@ -248,6 +248,12 @@
               {{MediaDevices/produceCropTarget}} is later called on the clone, a new {{CropTarget}}
               will be assigned to it.
             </p>
+            <p>
+              If the {{Element}} provided to {{MediaDevices/produceCropTarget()}} as input, is of a
+              type which the user agent has not yet implemented support for, then the user agent
+              MUST synchonously throw a new {{DOMException}} object whose {{DOMException/name}}
+              attribute has the value {{"NotSupportedError"}}.
+            </p>
           </dd>
         </dl>
         <div class="note">
