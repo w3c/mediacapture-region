@@ -145,13 +145,13 @@
       <section id="crop-target">
         <h3><dfn>CropTarget</dfn> Definition</h3>
         <p>
-          CropTarget is an intentionally empty, opaque identifier that exposes nothing. Its sole
-          purpose is to be handed to {{BrowserCaptureMediaStreamTrack/cropTo}} as input.
+          CropTarget is an intentionally empty, opaque identifier. Its purpose is to be handed to
+          {{BrowserCaptureMediaStreamTrack/cropTo}} as input.
         </p>
         <pre class="idl">
           [Exposed=(Window,Worker), Serializable]
           interface CropTarget {
-            // Intentionally empty; just an opaque identifier.
+            [SecureContext] static Promise&lt;CropTarget&gt; fromElement(Element element);
           };
         </pre>
         <div class="note">
@@ -160,7 +160,53 @@
             <a href="https://github.com/w3c/mediacapture-region/issues/18">issue #18</a>.
           </p>
         </div>
-        <dl data-link-for="CropTarget" data-dfn-for="CropTarget"></dl>
+        <div class="note">
+          <p>
+            There is no consensus yet on whether {{CropTarget/fromElement}} should be exposed beyond
+            secure contexts.
+          </p>
+        </div>
+        <dl data-link-for="CropTarget" data-dfn-for="CropTarget">
+          <dt>
+            <dfn>fromElement()</dfn>
+          </dt>
+          <dd>
+            <p>
+              Calling {{CropTarget/fromElement}} with an {{Element}} of a supported type associates
+              that {{Element}} with a {{CropTarget}}. This {{CropTarget}} may be used as input to
+              {{BrowserCaptureMediaStreamTrack/cropTo}}. We define a
+              <dfn>valid CropTarget</dfn> as one returned by a previous call to
+              {{CropTarget.fromElement()}} in the current [=top-level browsing context=] or any of
+              its
+              <a data-cite="HTML#list-of-the-descendant-browsing-contexts"
+                >descendant browsing contexts</a
+              >.
+            </p>
+            <p>
+              When {{CropTarget/fromElement}} is called with a given <var>element</var>, the user
+              agent [=create a CropTarget|creates a CropTarget=] with <var>element</var> as input.
+              The user agent MUST return a {{Promise}} <var>p</var>. The user agent MUST resolve
+              <var>p</var> only after it has finished all the necessary internal propagation of
+              state associated with the new {{CropTarget}}, at which point the user agent MUST be
+              ready to receive the new {{CropTarget}} as a valid parameter to
+              {{BrowserCaptureMediaStreamTrack/cropTo}}.
+            </p>
+            <p>
+              When cloning an {{Element}} on which {{CropTarget/fromElement}} was previously called,
+              the clone is not associated with any {{CropTarget}}. If {{CropTarget/fromElement}} is
+              later called on the clone, a new {{CropTarget}} will be assigned to it.
+            </p>
+            <div class="note">
+              <p>
+                There is no consensus yet on whether producing a {{CropTarget}}
+                should be done by invoking an asynchronous method like {{CropTarget.fromElement()}},
+                or a {{CropTarget}} constructor that accepts an {{Element}} as input. This is
+                further discussed on
+                <a href="https://github.com/w3c/mediacapture-region/issues/17">issue #17</a>.
+              </p>
+            </div>
+          </dd>
+        </dl>
         <p>
           To <dfn data-export>create a CropTarget</dfn> with <var>element</var> as input, run the
           following steps:
@@ -190,7 +236,7 @@
         <ol>
           <li>
             <p>
-              If <var>forStorage</var> is <code>true</code>, throw with a new {{DOMException}}
+              If <var>forStorage</var> is <code>true</code>, throw with new {{DOMException}}
               object whose {{DOMException/name}} attribute has the value {{"DataCloneError"}}.
             </p>
           </li>
@@ -208,63 +254,6 @@
             </p>
           </li>
         </ol>
-      </section>
-      <section id="producecroptarget-method">
-        <h3>MediaDevices.produceCropTarget</h3>
-        <pre class="idl">
-          partial interface MediaDevices {
-            Promise&lt;CropTarget&gt;
-            produceCropTarget(Element element);
-          };
-        </pre>
-        <dl data-link-for="MediaDevices" data-dfn-for="MediaDevices">
-          <dt>
-            <dfn>produceCropTarget()</dfn>
-          </dt>
-          <dd>
-            <p>
-              Calling {{MediaDevices/produceCropTarget}} on an {{Element}} of a supported type
-              associates that {{Element}} with a {{CropTarget}}. This {{CropTarget}} may be used as
-              input to {{BrowserCaptureMediaStreamTrack/cropTo}}. We define a
-              <dfn>valid CropTarget</dfn> as one returned by a previous call to
-              {{MediaDevices/produceCropTarget()}} in the current [=top-level browsing context=] or
-              any of its
-              <a data-cite="HTML#list-of-the-descendant-browsing-contexts"
-                >descendant browsing contexts</a
-              >.
-            </p>
-            <p>
-              When {{MediaDevices/produceCropTarget}} is called on a given <var>element</var>, the
-              user agent [=create a CropTarget|creates a CropTarget=] with <var>element</var> as
-              input. The user agent MUST return a {{Promise}} <var>p</var>. The user agent MUST
-              resolve <var>p</var> only after it has finished all the necessary internal propagation
-              of state associated with the new {{CropTarget}}, at which point the user agent MUST be
-              ready to receive the new {{CropTarget}} as a valid parameter to
-              {{BrowserCaptureMediaStreamTrack/cropTo}}.
-            </p>
-            <p>
-              When cloning an {{Element}} on which {{MediaDevices/produceCropTarget}} was previously
-              called, the clone is not associated with any {{CropTarget}}. If
-              {{MediaDevices/produceCropTarget}} is later called on the clone, a new {{CropTarget}}
-              will be assigned to it.
-            </p>
-          </dd>
-        </dl>
-        <div class="note">
-          <p>There is no consensus yet on the following issues:</p>
-          <ul>
-            <li>
-              Whether <code>produceCropTarget()</code> should be exposed on instances of
-              {{MediaDevices}} or on instances of {{Element}}. This is under discussion in
-              <a href="https://github.com/w3c/mediacapture-region/issues/11">issue #11</a>.
-            </li>
-            <li>
-              Whether {{MediaDevices/produceCropTarget()}} should return a {{CropTarget}} or a
-              {{Promise}}&lt;{{CropTarget}}&gt;. This is under discussion in
-              <a href="https://github.com/w3c/mediacapture-region/issues/17">issue #17</a>.
-            </li>
-          </ul>
-        </div>
       </section>
     </section>
     <section id="cropping-a-track">
@@ -410,7 +399,7 @@
           <h4>Crop-Session Definitions</h4>
           <p>
             We define an {{Element}} for which a {{CropTarget}} was produced (through a call to
-            {{MediaDevices/produceCropTarget}}) as a <dfn>potential crop-target</dfn>.
+            {{CropTarget/fromElement}}) as a <dfn>potential crop-target</dfn>.
           </p>
           <p>
             We define a [=potential crop-target=] which is targeted by a successful call to
@@ -484,7 +473,7 @@
         <p>Code in the capture-target:</p>
         <pre class="javascript">
           const mainContentArea = navigator.getElementById('mainContentArea');
-          const cropTarget = await navigator.mediaDevices.produceCropTarget(mainContentArea);
+          const cropTarget = await CropTarget.fromElement(mainContentArea);
           sendCropTarget(cropTarget);
 
           function sendCropTarget(cropTarget) {
