@@ -67,7 +67,7 @@
     <script>
       const topLevelContainer = document.getElementById("topLevelContainer");
       const error = document.getElementById("errorDiv");
-      if (navigator.mediaDevices.produceCropId) {
+      if (typeof CropTarget !== 'undefined') {
         topLevelContainer.hidden = false;
       } else {
         error.hidden = false;
