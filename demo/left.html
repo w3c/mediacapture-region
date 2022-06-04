@@ -53,7 +53,7 @@
       </div>
     </div>
     <script>
-      if (!navigator.mediaDevices.produceCropId) {
+      if (!CropTarget || !CropTarget.fromElement) {
         // TODO: Display explanation and abort.
       }
 
@@ -84,8 +84,8 @@
       }
 
       async function init() {
-        postCropID(await navigator.mediaDevices.produceCropId(document.getElementById("div1")));
-        postCropID(await navigator.mediaDevices.produceCropId(document.getElementById("div2")));
+        postCropID(await CropTarget.fromElement(document.getElementById("div1")));
+        postCropID(await CropTarget.fromElement(document.getElementById("div2")));
       }
 
       function toggle(div) {
