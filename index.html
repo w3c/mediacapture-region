@@ -307,22 +307,8 @@
               </li>
               <li>
                 <p>
-                  The user agent MUST validate <var>cropTarget</var> according to [=this=] track's
-                  current [=crop-state=].
-                </p>
-                <ul>
-                  <li>
-                    If [=this=] track is [=uncropped=], the user agent MUST only accept [=valid
-                    CropTargets=].
-                  </li>
-                  <li>
-                    If [=this=] track is [=cropped=], the user agent MUST accept either [=valid
-                    CropTargets=] or {{undefined}}.
-                  </li>
-                </ul>
-                <p>
-                  If the user agent does not accept <var>cropTarget</var>, return a {{Promise}}
-                  [=rejected=] with an {{UnknownError}}.
+                  If <var>cropTarget</var> is neither a [=valid CropTarget=] nor {{undefined}}, the
+                  user agent MUST return a {{Promise}} [=rejected=] with an {{UnknownError}}.
                 </p>
               </li>
               <li>Let <var>p</var> be a new {{Promise}}.</li>
