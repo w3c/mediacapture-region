@@ -191,11 +191,6 @@
               ready to receive the new {{CropTarget}} as a valid parameter to
               {{BrowserCaptureMediaStreamTrack/cropTo}}.
             </p>
-            <p>
-              When cloning an {{Element}} on which {{CropTarget/fromElement}} was previously called,
-              the clone is not associated with any {{CropTarget}}. If {{CropTarget/fromElement}} is
-              later called on the clone, a new {{CropTarget}} will be assigned to it.
-            </p>
             <div class="note">
               <p>
                 There is no consensus yet on whether producing a {{CropTarget}} should be done by
@@ -277,7 +272,6 @@
           [Exposed = Window]
           interface BrowserCaptureMediaStreamTrack : MediaStreamTrack {
             Promise&lt;undefined&gt; cropTo(CropTarget? cropTarget);
-            BrowserCaptureMediaStreamTrack clone();
           };
         </pre>
         <dl
@@ -366,16 +360,6 @@
               </li>
               <li>Return <var>p</var>.</li>
             </ol>
-          </dd>
-          <dt>
-            <dfn>clone()</dfn>
-          </dt>
-          <dd>
-            <p>
-              When a {{BrowserCaptureMediaStreamTrack}} is cloned, the user agent MUST produce a
-              track which is initially [=uncropped=], regardless of the [=crop-state=] of the
-              original track.
-            </p>
           </dd>
         </dl>
       </section>
