@@ -9,12 +9,11 @@
 
   <body>
     <h1>Video Conferencing App</h1>
-    <br /><br /><br />
-    <video id="video" autoplay playsinline style="border: none"></video>
-    <br /><br /><br />
     <button id="button0" onclick="OnSourceSelected(0);" disabled>Source #1</button>
     <button id="button1" onclick="OnSourceSelected(1);" disabled>Source #2</button>
     <button id="uncropped" onclick="OnUncroppedSelected();" disabled>Uncropped</button>
+    <br /><br /><br />
+    <video id="video" autoplay playsinline style="border: none"></video>
     <br />
     <p id="errorMessage" style="color: red"></p>
     <br />
@@ -35,7 +34,7 @@
       const errorMessage = document.getElementById("errorMessage");
       const muteIndicator = document.getElementById("muteIndicator");
       let track;
-      let cropIDs = [];
+      let cropTargets = [];
       let pip;
       let recordedChunks = [];
       let mediaRecorder;
@@ -96,7 +95,7 @@
         video.style = "border: none;";
         if (await MaybeStartCapturing()) {
           video.pause();
-          await track.cropTo(cropIDs[source]);
+          await track.cropTo(cropTargets[source]);
           video.play();
         }
       }
@@ -106,7 +105,7 @@
           // TODO: This should not be hard-coded, just capped to the size of the div.
           video.style = "border: none; width: 500px; height: 500px;";
           video.pause();
-          await track.cropTo("");
+          await track.cropTo(null);
           video.play();
         }
       }
@@ -153,13 +152,12 @@
         });
       }
 
-      function onBroadcastChannelMessage(serializedMessage) {
+      function onBroadcastChannelMessage({ data }) {
         try {
-          const msg = JSON.parse(serializedMessage.data);
-          if (msg.init) {
+          if (data.init) {
             init();
-          } else if (msg.cropID) {
-            cropIDs.push(msg.cropID);
+          } else if (data.cropTarget) {
+            cropTargets.push(data.cropTarget);
           }
         } catch (error) {
           console.error(`${error}`);
