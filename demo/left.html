@@ -72,20 +72,19 @@
       const broadcastChannel = new BroadcastChannel("region-capture-demo");
       broadcastChannel.onmessage = onBroadcastChannelMessage;
 
-      function onBroadcastChannelMessage(serializedMessage) {
-        const msg = JSON.parse(serializedMessage.data);
-        if (msg.init) {
+      function onBroadcastChannelMessage({ data }) {
+        if (data.init) {
           init();
         }
       }
 
-      function postCropID(cropID) {
-        broadcastChannel.postMessage(JSON.stringify({ cropID: cropID }));
+      function postCropTarget(cropTarget) {
+        broadcastChannel.postMessage({ cropTarget });
       }
 
       async function init() {
-        postCropID(await CropTarget.fromElement(document.getElementById("div1")));
-        postCropID(await CropTarget.fromElement(document.getElementById("div2")));
+        postCropTarget(await CropTarget.fromElement(document.getElementById("div1")));
+        postCropTarget(await CropTarget.fromElement(document.getElementById("div2")));
       }
 
       function toggle(div) {

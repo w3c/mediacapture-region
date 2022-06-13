@@ -79,7 +79,7 @@
           return;
         }
         const broadcastChannel = new BroadcastChannel("region-capture-demo");
-        broadcastChannel.postMessage(JSON.stringify({ init: true }));
+        broadcastChannel.postMessage({ init: true });
       }
     </script>
   </body>
