@@ -151,7 +151,7 @@
         <pre class="idl">
           [Exposed=(Window,Worker), Serializable]
           interface CropTarget {
-            [SecureContext] static Promise&lt;CropTarget&gt; fromElement(Element element);
+            [Exposed=Window, SecureContext] static Promise&lt;CropTarget&gt; fromElement(Element element);
           };
         </pre>
         <div class="note">
