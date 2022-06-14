@@ -96,7 +96,7 @@
         if (await MaybeStartCapturing()) {
           video.pause();
           await track.cropTo(cropTargets[source]);
-          video.play();
+          await video.play();
         }
       }
 
@@ -106,7 +106,7 @@
           video.style = "border: none; width: 500px; height: 500px;";
           video.pause();
           await track.cropTo(null);
-          video.play();
+          await video.play();
         }
       }
 
