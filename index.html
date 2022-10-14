@@ -90,7 +90,7 @@
       <p>
         We define two <dfn>crop-states</dfn> for video tracks - <dfn>cropped</dfn> and
         <dfn>uncropped</dfn>. Tracks start out [=uncropped=], and may turn to [=cropped=] when
-        {{BrowserCaptureMediaStreamTrack/cropTo()}} is successfully called on them.
+        {{BrowserCaptureMediaStreamTrack/cropTo}} is successfully called on them.
       </p>
     </section>
     <section id="produce-crop-target">
@@ -99,7 +99,7 @@
         <h3>CropTarget Motivation</h3>
         <p>
           The [=cropping mechanism=] presented in this document
-          ({{BrowserCaptureMediaStreamTrack/cropTo()}}) relies on [=Crop-session Target=] rather than
+          ({{BrowserCaptureMediaStreamTrack/cropTo}}) relies on [=Crop-session Target=] rather than
           on direct node references. This serves a dual purpose.
         </p>
         <ul>
@@ -119,7 +119,7 @@
         <h3><dfn>CropTarget</dfn> Definition</h3>
         <p>
           CropTarget is an intentionally empty, opaque identifier. Its purpose is to be handed to
-          {{BrowserCaptureMediaStreamTrack/cropTo()}} as input.
+          {{BrowserCaptureMediaStreamTrack/cropTo}} as input.
         </p>
         <pre class="idl">
           [Exposed=(Window,Worker), Serializable]
@@ -147,7 +147,7 @@
             <p>
               Calling {{CropTarget/fromElement}} with an {{Element}} of a supported type associates
               that {{Element}} with a {{CropTarget}}. This {{CropTarget}} may be used as input to
-              {{BrowserCaptureMediaStreamTrack/cropTo()}}. We define a
+              {{BrowserCaptureMediaStreamTrack/cropTo}}. We define a
               <dfn>valid CropTarget</dfn> as one returned by a call to {{CropTarget.fromElement()}}
               in a <a data-cite="!HTML#document">document</a> that is still
               <a data-cite="!HTML#active-document">active</a>.
@@ -159,7 +159,7 @@
               <var>p</var> only after it has finished all the necessary internal propagation of
               state associated with the new {{CropTarget}}, at which point the user agent MUST be
               ready to receive the new {{CropTarget}} as a valid parameter to
-              {{BrowserCaptureMediaStreamTrack/cropTo()}}.
+              {{BrowserCaptureMediaStreamTrack/cropTo}}.
             </p>
             <p>
               When cloning an {{Element}} on which {{CropTarget/fromElement}} was previously called,
@@ -238,7 +238,7 @@
         <p>
           We specify that if the user chooses to capture a [=browser=] [=display-surface=], the user
           agent MUST instantiate the video track as either {{MediaStreamTrack}}, or as some
-          sub-class of {{MediaStreamTrack}}, and that {{BrowserCaptureMediaStreamTrack/cropTo()}} MUST
+          sub-class of {{MediaStreamTrack}}, and that {{BrowserCaptureMediaStreamTrack/cropTo}} MUST
           be exposed on this track. For simplicity's sake, this document assumes that a subclass
           called {{BrowserCaptureMediaStreamTrack}} is used by the user agent.
         </p>
@@ -267,7 +267,7 @@
               of <var>cropTarget</var>.[[\Element]]. Since the track is restricted to the visible
               viewport of the [=display-surface=], the captured area will be the intersection of the
               visible viewport and the element bounding client rectangle. Whenever
-              {{BrowserCaptureMediaStreamTrack/cropTo()}} is invoked, the user agent MUST execute the
+              {{BrowserCaptureMediaStreamTrack/cropTo}} is invoked, the user agent MUST execute the
               following algorithm:
             </p>
             <ol>
@@ -355,7 +355,7 @@
           </p>
           <p>
             We define a [=potential crop-target=] which is targeted by a successful call to
-            {{BrowserCaptureMediaStreamTrack/cropTo()}} as the <dfn>crop-session target</dfn>.
+            {{BrowserCaptureMediaStreamTrack/cropTo}} as the <dfn>crop-session target</dfn>.
           </p>
           <p>
             Consider a frame produced on a [=cropped=] video track. The user agent calculates the
@@ -411,7 +411,7 @@
               >, in which case it would not produce any new frames. Nevertheless, the user agent
               MUST treat a [=disconnected crop-session target=] the same way it treats an [=empty
               crop-session target=]. The application may call
-              {{BrowserCaptureMediaStreamTrack/cropTo()}} on the track with either {{undefined}} or a
+              {{BrowserCaptureMediaStreamTrack/cropTo}} on the track with either {{undefined}} or a
               new {{CropTarget}}, thereby allowing the production of frames on the track to be
               resumed.
             </p>
