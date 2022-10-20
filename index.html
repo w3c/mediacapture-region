@@ -27,13 +27,6 @@
         This document uses the definition of the following concepts from [[SCREEN-CAPTURE]]:
         <dfn>display-surface</dfn> and <dfn>browser</dfn> [=display-surface=].
       </p>
-      <p>
-        This specification defines <dfn>self-capture</dfn> as the capture of a [=browser=]
-        [=display-surface=] that is the rendered form of the [=top-level browsing context=] of the
-        [=associated Document=] of the {{MediaDevices}} object from which the application initiated
-        the capture session. A <dfn>self-capture video track</dfn> is a {{MediaStreamTrack}} sourced
-        by <a>self-capture</a>.
-      </p>
     </section>
     <section class="informative" id="use-cases">
       <h2>Use Cases</h2>
@@ -78,27 +71,7 @@
           applications will likely use a combination of {{MediaDevices/getDisplayMedia()}} and
           Region Capture for some time to come.
         </p>
-        <p>
-          The combination of {{MediaDevices/getDisplayMedia()}} and Region Capture is also useful
-          for applications that allow the users to choose whichever [=display-surface=] they wish,
-          but offer distinct functionality depending on whether users choose to [=self-capture=] or,
-          conversely, choose to capture a window or monitor. Such applications would only succeed in
-          using Region Capture if the user chose to [=self-capture=]; otherwise, the attempt to
-          apply cropping would be a no-op.
-        </p>
       </section>
-    </section>
-    <section id="scope">
-      <h2>Scope</h2>
-      <p>
-        As presently defined, {{BrowserCaptureMediaStreamTrack/cropTo}}(<var>cropTarget</var>)
-        returns a [=rejected=] {{Promise}} if the <var>cropTarget</var> is not associated with an
-        {{Element}} within either the current [=top-level browsing context=] or any of its
-        <a data-cite="HTML#list-of-the-descendant-browsing-contexts">descendant browsing contexts</a
-        >. That means that all of the mechanisms introduced by this document are only relevant for
-        [=self-capture=]. An immediate corollary is that navigation of the (shared) [=top-level
-        browsing context=] breaks off the capture, and therefore also the cropping session.
-      </p>
     </section>
     <section id="solution-overview">
       <h2>Solution Overview</h2>
@@ -169,12 +142,9 @@
               Calling {{CropTarget/fromElement}} with an {{Element}} of a supported type associates
               that {{Element}} with a {{CropTarget}}. This {{CropTarget}} may be used as input to
               {{BrowserCaptureMediaStreamTrack/cropTo}}. We define a
-              <dfn>valid CropTarget</dfn> as one returned by a previous call to
-              {{CropTarget.fromElement()}} in the current [=top-level browsing context=] or any of
-              its
-              <a data-cite="HTML#list-of-the-descendant-browsing-contexts"
-                >descendant browsing contexts</a
-              >.
+              <dfn>valid CropTarget</dfn> as one returned by a call to {{CropTarget.fromElement()}}
+              in a <a data-cite="!HTML#document">document</a> that is still
+              <a data-cite="!HTML#active-document">active</a>.
             </p>
             <p>
               When {{CropTarget/fromElement}} is called with a given <var>element</var>, the user
@@ -283,8 +253,8 @@
           </dt>
           <dd>
             <p>
-              Calls to this method instruct the user agent to start/stop cropping a [=self-capture
-              video track=] to the
+              Calls to this method instruct the user agent to start/stop cropping a
+              video track to the
               <a href="https://drafts.csswg.org/cssom-view/#dom-element-getboundingclientrect">
                 bounding client rectangle</a
               >
@@ -295,10 +265,6 @@
               following algorithm:
             </p>
             <ol>
-              <li>
-                If [=this=] is not a [=self-capture video track=], the user agent MUST return a new
-                {{Promise}}, [=rejected=] with an {{NotSupportedError}}.
-              </li>
               <li>
                 <p>
                   If <var>cropTarget</var> is neither a [=valid CropTarget=] nor <code>null</code>, the
