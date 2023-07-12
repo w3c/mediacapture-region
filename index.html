@@ -182,8 +182,9 @@
           <li>
             <p>Let <var>weakRef</var> be a weak reference to <var>element</var>.</p>
             <p>
-              [=Create a CropTarget|Create=] <var>cropTarget</var>.[[\Element]] initialized to
-              <var>weakRef</var>.
+              [=Create a CropTarget|Create=]
+              <var>cropTarget</var>.<dfn data-dfn-for="CropTarget" class="export">[[\Element]]</dfn>
+              initialized to <var>weakRef</var>.
             </p>
             <div class="note">
               <p>
@@ -206,7 +207,8 @@
           </li>
           <li>
             <p>
-              Set <var>serialized</var>.[[\CropTargetElement]] to <var>value</var>.[[\Element]].
+              Set <var>serialized</var>.[[\CropTargetElement]] to
+              <var>value</var>.{{CropTarget/[[Element]]}}.
             </p>
           </li>
         </ol>
@@ -214,7 +216,8 @@
         <ol>
           <li>
             <p>
-              Set <var>value</var>.[[\Element]] to <var>serialized</var>.[[\CropTargetElement]].
+              Set <var>value</var>.{{CropTarget/[[Element]]}} to
+              <var>serialized</var>.[[\CropTargetElement]].
             </p>
           </li>
         </ol>
@@ -258,11 +261,11 @@
               <a href="https://drafts.csswg.org/cssom-view/#dom-element-getboundingclientrect">
                 bounding client rectangle</a
               >
-              of <var>cropTarget</var>.[[\Element]]. Since the track is restricted to the visible
-              viewport of the [=display-surface=], the captured area will be the intersection of the
-              visible viewport and the element bounding client rectangle. Whenever
-              {{BrowserCaptureMediaStreamTrack/cropTo}} is invoked, the user agent MUST execute the
-              following algorithm:
+              of <var>cropTarget</var>.{{CropTarget/[[Element]]}}. Since the track is restricted to
+              the visible viewport of the [=display-surface=], the captured area will be the
+              intersection of the visible viewport and the element bounding client rectangle.
+              Whenever {{BrowserCaptureMediaStreamTrack/cropTo}} is invoked, the user agent MUST
+              execute the following algorithm:
             </p>
             <ol>
               <li>
