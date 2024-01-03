@@ -95,7 +95,7 @@
         if (await MaybeStartCapturing()) {
           video.pause();
           await track.cropTo(cropTargets[source]);
-          video.play();
+          await video.play();
         }
       }
 
@@ -103,7 +103,7 @@
         if (await MaybeStartCapturing()) {
           video.pause();
           await track.cropTo(null);
-          video.play();
+          await video.play();
         }
       }
 
