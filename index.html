@@ -279,6 +279,11 @@
                 <p>Run the following steps in parallel:</p>
                 <ol>
                   <li>
+                    If the user agent is unable to change the [=crop-state=] of the
+                    {{MediaStreamTrack}}, for example due to resource limitation, the user agent MUST
+                    return a new {{Promise}}, [=rejected=] with an {{OperationError}}.
+                  </li>
+                  <li>
                     If <var>cropTarget</var> is neither {{undefined}} nor a [=valid CropTarget=],
                     reject <var>p</var> with a {{NotAllowedError}} and abort these steps.
                   </li>
