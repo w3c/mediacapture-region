@@ -2,7 +2,7 @@
 
 ## 2.1. What information might this feature expose to Web sites or other parties, and for what purposes is that exposure necessary?
 No new information is exposed, except:
-If a party within the [browsing context](https://html.spec.whatwg.org/multipage/browsers.html#browsing-context) is engaged in [self-capture](https://w3c.github.io/mediacapture-region/#dfn-self-capture) using **[pre-existing means](https://www.w3.org/TR/screen-capture/)**, and a third party within the same [browsing context](https://html.spec.whatwg.org/multipage/browsers.html#browsing-context) had minted a token and passed it to the first party, then the first party can learn of when a certain region in the document goes in/out of the viewport, by listening to the mute track's mute events.
+If a party within the [browsing context](https://html.spec.whatwg.org/multipage/browsers.html#browsing-context) is engaged in [self-capture](https://w3c.github.io/mediacapture-region/#dfn-self-capture) using **[pre-existing means](https://www.w3.org/TR/screen-capture/)**, and a third-party within the same [browsing context](https://html.spec.whatwg.org/multipage/browsers.html#browsing-context) had minted a token and passed it to the first party, then the first party can learn of when a certain region in the document goes in/out of the viewport, by listening to the mute track's mute events.
 
 ## 2.2. Do features in your specification expose the minimum amount of information necessary to enable their intended uses?
 Yes.
@@ -35,7 +35,7 @@ No.
 No.
 
 ## 2.12. What temporary identifiers do the features in this specification create or expose to the web?
-This feature allows a website to mint tokens called [CropTarget](https://w3c.github.io/mediacapture-region/#crop-target). These are opaque interfaces which are only meaningful within their [browsing context](https://html.spec.whatwg.org/multipage/browsers.html#browsing-context). They do **not** outlive the browsing session. The party minting the tokens may transfer them to trusted third parties within the [browsing context](https://html.spec.whatwg.org/multipage/browsers.html#browsing-context). The only use these tokens have, is to allow **stripping** information from a video stream by cropping it.
+This feature allows a website to mint tokens called [CropTarget](https://w3c.github.io/mediacapture-region/#crop-target). These are opaque interfaces which are only meaningful within their [browsing context](https://html.spec.whatwg.org/multipage/browsers.html#browsing-context). They do **not** outlive the browsing session. The party minting the tokens may transfer them to trusted third-parties within the [browsing context](https://html.spec.whatwg.org/multipage/browsers.html#browsing-context). The only use these tokens have, is to allow **stripping** information from a video stream by cropping it.
 
 ## 2.13. How does this specification distinguish between behavior in first-party and third-party contexts?
 Not applicable.
