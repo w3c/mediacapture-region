@@ -421,7 +421,7 @@
       <div class="example">
         <p>Code in the capture-target:</p>
         <pre class="javascript">
-          const mainContentArea = navigator.getElementById('mainContentArea');
+          const mainContentArea = document.getElementById('mainContentArea');
           const cropTarget = await CropTarget.fromElement(mainContentArea);
           sendCropTarget(cropTarget);
 
@@ -438,7 +438,7 @@
           async function startCroppedCapture(cropTarget) {
             const stream = await navigator.mediaDevices.getDisplayMedia();
             const [track] = stream.getVideoTracks();
-            if (!!track.cropTo) {
+            if (!track.cropTo) {
               handleError(stream);
               return;
             }
